@@ -271,22 +271,18 @@ async def generate_invite_link(channel_id: int, context: CallbackContext) -> str
         logger.error(f"Errore nella generazione del link d'invito: {e}")
         return None
 
-# Funzione per eliminare il messaggio inoltrato
-async def try_delete_forwarded_message(user_id: int, context: CallbackContext):
-    if user_id in forwarded_message_ids:
-        try:
-            await context.bot.delete_message(
-                chat_id=user_id, message_id=forwarded_message_ids[user_id]
-            )
-            del forwarded_message_ids[user_id]
-        except error.BadRequest:
-            pass
-        except Exception as e:
-            logger.error(f"Errore nell'eliminazione del messaggio inoltrato: {e}")
-
-# Funzione per aggiungere il pulsante "Torna all'inizio"
-def add_back_to_main_button():
-    return [[InlineKeyboardButton("⬅️ Torna all'inizio", callback_data="main_menu")]]
+# Funzione per eliminare il messaggio di supporto
+ async def try_delete_support_message(user_id: int, context: CallbackContext):
+     if user_id in support_message_ids:
+         try:
+             await context.bot.delete_message(
+                 chat_id=user_id, message_id=support_message_ids[user_id]
+             )
+             del support_message_ids[user_id]
+         except error.BadRequest:
+             pass
+         except Exception as e:
+             logger.error(f"Errore nell'eliminazione del messaggio di supporto: {e}")
 
 # Funzione per mostrare il menu principale
 async def show_main_menu(user_id: int, context: CallbackContext, message_id: int = None):
@@ -329,11 +325,12 @@ async def show_main_menu(user_id: int, context: CallbackContext, message_id: int
         main_menu_message_id[user_id] = sent_message.message_id
 
 # Funzione per inoltrare un episodio
-async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
+ async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
      query = update.callback_query
      user_id = query.from_user.id
      await query.answer()
      await try_delete_forwarded_message(user_id, context)
+     await try_delete_support_message(user_id, context) # Elimina il vecchio messaggio di supporto (se presente)
      try:
          await query.message.delete()
      except:
@@ -357,12 +354,13 @@ async def forward_episode(update: Update, context: CallbackContext, channel_id: 
                  "⚡https://amzn.to/432DGwn⚡\n"
                  "Per te il prezzo non cambia, ma a me dai una grande aiuto! Usa il link prima dei tuoi acquisti o dai un'occhiata al mio canale offerte! Grazie per il supporto!"
              )
-             # Invia il testo di supporto
-             await context.bot.send_message(
+             # Invia il testo di supporto e memorizza l'ID del messaggio
+             support_sent_message = await context.bot.send_message(
                  user_id,
                  support_text,
                  disable_web_page_preview=True # Disabilita l'anteprima del link
              )
+             support_message_ids[user_id] = support_sent_message.message_id
 
              buttons = []
              season, episode = map(int, query.data.split("|")[-2:])
@@ -516,20 +514,21 @@ async def start(update: Update, context: CallbackContext):
     else:
         await show_main_menu(user_id, context)
 
-# Verifica dopo clic su "ho completato iscrizione"
-async def check_subscription(update: Update, context: CallbackContext):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    if not await is_user_subscribed(user_id, context):
-        try:
-            await query.message.delete()
-        except:
-            pass
-        await send_subscription_message(user_id, context)
-    else:
-        await show_main_menu(user_id, context, message_id=query.message.message_id)
-    await try_delete_forwarded_message(user_id, context)
+ # Verifica dopo clic su "ho completato iscrizione"
+ async def check_subscription(update: Update, context: CallbackContext):
+     query = update.callback_query
+     user_id = query.from_user.id
+     await query.answer()
+     if not await is_user_subscribed(user_id, context):
+         try:
+             await query.message.delete()
+         except:
+             pass
+         await send_subscription_message(user_id, context)
+     else:
+         await show_main_menu(user_id, context, message_id=query.message.message_id)
+     await try_delete_forwarded_message(user_id, context)
+     await try_delete_support_message(user_id, context) # Elimina il messaggio di supporto anche qui
 
 # Gestione apertura Film 2025
 async def open_film(update: Update, context: CallbackContext):
@@ -713,16 +712,17 @@ async def callback_handler(update: Update, context: CallbackContext):
         await main_menu(update, context)
 
 # Gestione del pulsante "Torna all'inizio"
-async def main_menu(update: Update, context: CallbackContext):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    await show_main_menu(user_id, context, message_id=main_menu_message_id.get(user_id))
+ async def main_menu(update: Update, context: CallbackContext):
+     query = update.callback_query
+     user_id = query.from_user.id
+     await query.answer()
+     await try_delete_forwarded_message(user_id, context)
+     await try_delete_support_message(user_id, context) # Elimina il messaggio di supporto anche qui
+     try:
+         await query.message.delete()
+     except:
+         pass
+     await show_main_menu(user_id, context, message_id=main_menu_message_id.get(user_id))
 
 # Setup del bot
 def main():
