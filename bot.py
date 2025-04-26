@@ -304,7 +304,7 @@ async def callback_handler(update: Update, context: CallbackContext):
 # Funzione per mostrare il menu principale
 async def main_menu(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
-        await try_delete_forwarded_message(user_id, context)
+    await try_delete_forwarded_message(user_id, context)
     await try_delete_support_message(user_id, context)
 
     buttons = [
@@ -325,7 +325,7 @@ async def check_subscription(update: Update, context: CallbackContext) -> bool:
         await send_subscription_message(user_id, context)
         return False
     return True
-
+    
 # Funzione per aprire il canale Film 2025
 async def open_film(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
