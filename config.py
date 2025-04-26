@@ -172,3 +172,14 @@ ANIMATION = {
         },
     },
 }
+# config.py
+
+BOT_TOKEN = "IL_TUO_TOKEN_DEL_BOT"
+FILM_2025_CHANNEL_ID = -1002451786739
+SERIES_TV = {
+    # ... (il tuo dizionario SERIES_TV)
+}
+ANIMATION = {
+    # ... (il tuo dizionario ANIMATION)
+}
+REQUIRED_CHANNELS = ["@NostraReteCanali", "@amznoes"]
