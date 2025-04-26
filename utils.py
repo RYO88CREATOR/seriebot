@@ -1,5 +1,6 @@
 import logging
-from telegram import Update, CallbackContext, ChatMember
+from telegram.ext import CallbackContext
+from telegram import Update, ChatMember
 from telegram.constants import ParseMode
 from telegram.error import BadRequest
 from config import REQUIRED_CHANNELS  # Importa la lista dei canali richiesti
