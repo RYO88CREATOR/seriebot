@@ -329,64 +329,78 @@ async def show_main_menu(user_id: int, context: CallbackContext, message_id: int
         main_menu_message_id[user_id] = sent_message.message_id
 
 # Funzione per inoltrare un episodio
-async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    async with telegram_semaphore:
-        try:
-            sent_message = await context.bot.forward_message(
-                chat_id=user_id,
-                from_chat_id=channel_id,
-                message_id=message_id,
-                protect_content=True,
-            )
-            forwarded_message_ids[user_id] = sent_message.message_id
-            buttons = []
-            season, episode = map(int, query.data.split("|")[-2:])
-            series_name = decode_series_name(query.data.split("|")[2])
-            max_episodes = (SERIES_TV[series_name]["seasons"][season]["num_episodes"]
-                            if query.data.split("|")[1] == "series"
-                            else ANIMATION[series_name]["seasons"][season]["num_episodes"])
+ async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
+     query = update.callback_query
+     user_id = query.from_user.id
+     await query.answer()
+     await try_delete_forwarded_message(user_id, context)
+     try:
+         await query.message.delete()
+     except:
+         pass
+     if not await is_user_subscribed(user_id, context):
+         await send_subscription_message(user_id, context)
+         return
+     async with telegram_semaphore:
+         try:
+             sent_message = await context.bot.forward_message(
+                 chat_id=user_id,
+                 from_chat_id=channel_id,
+                 message_id=message_id,
+                 protect_content=True,
+             )
+             forwarded_message_ids[user_id] = sent_message.message_id
 
-            next_episode_button = None
-            if (episode + 1) <= max_episodes:
-                next_episode_button = InlineKeyboardButton("Ep. successivo ->", callback_data=f"forward|{query.data.split('|')[1]}|{series_name.lower().replace(' ', '_')}|{season}|{episode+1}")
+             # Testo aggiuntivo da inviare
+             support_text = (
+                 "Ciao! Sostieni il progetto: considera di fare i tuoi acquisti Amazon tramite il mio link affiliato:\n"
+                 "⚡https://amzn.to/432DGwn⚡\n"
+                 "Per te il prezzo non cambia, ma a me dai una grande aiuto! Usa il link prima dei tuoi acquisti o dai un'occhiata al mio canale offerte! Grazie per il supporto!"
+             )
+             # Invia il testo di supporto
+             await context.bot.send_message(
+                 user_id,
+                 support_text,
+                 disable_web_page_preview=True # Disabilita l'anteprima del link
+             )
 
-            back_to_main_button = InlineKeyboardButton("⬅️ Torna all'inizio", callback_data="main_menu")
+             buttons = []
+             season, episode = map(int, query.data.split("|")[-2:])
+             series_name = decode_series_name(query.data.split("|")[2])
+             max_episodes = (SERIES_TV[series_name]["seasons"][season]["num_episodes"]
+                             if query.data.split("|")[1] == "series"
+                             else ANIMATION[series_name]["seasons"][season]["num_episodes"])
 
-            if next_episode_button:
-                buttons.append([next_episode_button])
-            buttons.append([back_to_main_button])
+             next_episode_button = None
+             if (episode + 1) <= max_episodes:
+                 next_episode_button = InlineKeyboardButton("Ep. successivo ->", callback_data=f"forward|{query.data.split('|')[1]}|{series_name.lower().replace(' ', '_')}|{season}|{episode+1}")
 
-            await context.bot.send_message(
-                user_id,
-                f" {episode_title}",
-                reply_markup=InlineKeyboardMarkup(buttons),
-            )
-        except error.ChatNotFound:
-            await context.bot.send_message(
-                user_id,
-                "⚠️ Errore nell'inoltro dell'episodio: Chat non trovata.",
-                reply_markup=InlineKeyboardMarkup(add_back_to_main_button()),
-            )
-        except error.BadRequest:
-            await context.bot.send_message(
-                user_id,
-                "⚠️ Errore nell'inoltro dell'episodio: Messaggio non trovato nel canale.",
-                reply_markup=InlineKeyboardMarkup(add_back_to_main_button()),
-            )
-        except Exception as e:
-            await context.bot.send_message(user_id, f"⚠️ Errore nell'inoltro dell'episodio: {e}")
-            logger.error(f"Errore nell'inoltro episodio: {e}")
+             back_to_main_button = InlineKeyboardButton("⬅️ Torna all'inizio", callback_data="main_menu")
+
+             if next_episode_button:
+                 buttons.append([next_episode_button])
+             buttons.append([back_to_main_button])
+
+             await context.bot.send_message(
+                 user_id,
+                 f" {episode_title}",
+                 reply_markup=InlineKeyboardMarkup(buttons),
+             )
+         except error.ChatNotFound:
+             await context.bot.send_message(
+                 user_id,
+                 "⚠️ Errore nell'inoltro dell'episodio: Chat non trovata.",
+                 reply_markup=InlineKeyboardMarkup(add_back_to_main_button()),
+             )
+         except error.BadRequest:
+             await context.bot.send_message(
+                 user_id,
+                 "⚠️ Errore nell'inoltro dell'episodio: Messaggio non trovato nel canale.",
+                 reply_markup=InlineKeyboardMarkup(add_back_to_main_button()),
+             )
+         except Exception as e:
+             await context.bot.send_message(user_id, f"⚠️ Errore nell'inoltro dell'episodio: {e}")
+             logger.error(f"Errore nell'inoltro episodio: {e}")
 
 # Funzione per mostrare il menu delle stagioni
 async def show_seasons_menu(update: Update, context: CallbackContext, series_name: str, is_animation: bool = False):
