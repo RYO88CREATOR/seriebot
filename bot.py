@@ -325,7 +325,7 @@ async def show_main_menu(user_id: int, context: CallbackContext, message_id: int
         main_menu_message_id[user_id] = sent_message.message_id
 
 # Funzione per inoltrare un episodio
- async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
+async def forward_episode(update: Update, context: CallbackContext, channel_id: int, message_id: int, episode_title: str):
      query = update.callback_query
      user_id = query.from_user.id
      await query.answer()
@@ -712,7 +712,7 @@ async def callback_handler(update: Update, context: CallbackContext):
         await main_menu(update, context)
 
 # Gestione del pulsante "Torna all'inizio"
- async def main_menu(update: Update, context: CallbackContext):
+async def main_menu(update: Update, context: CallbackContext):
      query = update.callback_query
      user_id = query.from_user.id
      await query.answer()
