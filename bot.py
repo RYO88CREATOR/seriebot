@@ -515,7 +515,7 @@ async def start(update: Update, context: CallbackContext):
         await show_main_menu(user_id, context)
 
  # Verifica dopo clic su "ho completato iscrizione"
- async def check_subscription(update: Update, context: CallbackContext):
+async def check_subscription(update: Update, context: CallbackContext):
      query = update.callback_query
      user_id = query.from_user.id
      await query.answer()
