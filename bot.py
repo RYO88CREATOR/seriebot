@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from flask import Flask
 from threading import Thread
 
@@ -10,9 +11,8 @@ def ping():
     return "Bot attivo!"
 
 def run():
-    import os
-port = int(os.environ.get("PORT", 10000))
-app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
 Thread(target=run).start()
 
 from telegram import (
