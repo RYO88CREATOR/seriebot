@@ -3,10 +3,27 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler, CallbackQueryHandler
 from config import BOT_TOKEN, SERIES_TV, ANIMATION, FILM_2025_CHANNEL_ID
 from utils import try_delete_forwarded_message, try_delete_support_message, is_user_subscribed, send_subscription_message, forward_episode, generate_invite_link, show_main_menu, add_back_to_main_button
+import asyncio  # Assicurati che asyncio sia importato qui
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Bot token
+BOT_TOKEN = "8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o"
+# ID del canale Film 2025
+FILM_2025_CHANNEL_ID = -1002451786739
+# Canali obbligatori (dovrebbero essere in config.py)
+REQUIRED_CHANNELS = ["@NostraReteCanali", "@amznoes"]
+
+# Dizionari per gestire serie TV e animazione (ordinati alfabeticamente)
+SERIES_TV = {
+    # ... (il tuo dizionario SERIES_TV)
+}
+
+ANIMATION = {
+    # ... (il tuo dizionario ANIMATION)
+}
 
 # Funzione per cancellare messaggi in sicurezza
 async def safe_delete(message):
@@ -121,6 +138,7 @@ async def callback_handler(update: Update, context: CallbackContext):
 
     elif data[0] == "main":
         await main_menu(update, context)
+
 # Funzione per mostrare il menu principale
 async def main_menu(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
@@ -226,9 +244,4 @@ async def main():
     await app.run_polling()
 
 if __name__ == "__main__":
-    import asyncio
-
-    async def main_wrapper():
-        await main()
-
-    asyncio.run(main_wrapper())
+    asyncio.run(main())
