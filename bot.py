@@ -272,7 +272,7 @@ async def generate_invite_link(channel_id: int, context: CallbackContext) -> str
         return None
 
 # Funzione per eliminare il messaggio di supporto
- async def try_delete_support_message(user_id: int, context: CallbackContext):
+async def try_delete_support_message(user_id: int, context: CallbackContext):
      if user_id in support_message_ids:
          try:
              await context.bot.delete_message(
