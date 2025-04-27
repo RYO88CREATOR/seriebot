@@ -338,7 +338,7 @@ async def show_main_menu(user_id: int, context: CallbackContext, message_id: int
                 chat_id=user_id,
                 text=menu_text,
                 reply_markup=reply_markup,
-                disable_web_page_preview=True  # Disabilita l'anteprima dei link
+                disable_web_page_preview=False  # Disabilita l'anteprima dei link
             )
             main_menu_message_id[user_id] = sent_message.message_id
     else:
@@ -346,7 +346,7 @@ async def show_main_menu(user_id: int, context: CallbackContext, message_id: int
             chat_id=user_id,
             text=menu_text,
             reply_markup=reply_markup,
-            disable_web_page_preview=True  # Disabilita l'anteprima dei link
+            disable_web_page_preview=False  # Disabilita l'anteprima dei link
         )
         main_menu_message_id[user_id] = sent_message.message_id
 
