@@ -161,16 +161,24 @@ SERIES_TV = {
     "Will & Grace": {
     "channel_id": -1002499613359,
     "seasons": {
-        1: {"start_episode": 2, "num_episodes": 22},
-        2: {"start_episode": 24, "num_episodes": 24},
-        3: {"start_episode": 48, "num_episodes": 25},
-        4: {"start_episode": 73, "num_episodes": 27},
-        5: {"start_episode": 100, "num_episodes": 24},
-        6: {"start_episode": 124, "num_episodes": 24},
-        7: {"start_episode": 148, "num_episodes": 24},
-        8: {"start_episode": 172, "num_episodes": 23},
+        1: {"start_episode": 2,
+"num_episodes": 22},
+        2: {"start_episode": 24,
+"num_episodes": 24},
+        3: {"start_episode": 48,
+"num_episodes": 25},
+        4: {"start_episode": 73,
+"num_episodes": 27},
+        5: {"start_episode": 100,
+"num_episodes": 24},
+        6: {"start_episode": 124,
+"num_episodes": 24},
+        7: {"start_episode": 148,
+"num_episodes": 24},
+        8: {"start_episode": 172,
+"num_episodes": 23},
     },
-},
+}
 
 ANIMATION = {
     "Castlevania": {
