@@ -107,7 +107,7 @@ SERIES_TV = {
             2: {"start_episode": 13, "num_episodes": 2},
         },
     },
-    "Lol Chi Ride è Fuori": {
+    "Lol Chi Ride E Fuori": {
         "channel_id": -1002531644367,
         "seasons": {
             1: {"start_episode": 3, "num_episodes": 6},
