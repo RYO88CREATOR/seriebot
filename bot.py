@@ -114,6 +114,7 @@ SERIES_TV = {
             2: {"start_episode": 10, "num_episodes": 6},
             3: {"start_episode": 19, "num_episodes": 6},
             4: {"start_episode": 32, "num_episodes": 6},
+            5: {"start_episode": 39, "num_episodes": 6},
         },
     },
     "Lotr Gli Anelli Del Potere": {
