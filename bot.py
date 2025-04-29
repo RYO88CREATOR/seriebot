@@ -3,21 +3,6 @@ import logging
 from flask import Flask
 import threading
 import os
-
-app = Flask('')
-
-@app.route('/')
-def home():
-    return "Bot is alive!"
-
-def run():
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port)
-
-def keep_alive():
-    t = threading.Thread(target=run)
-    t.start()
-
 from telegram import (
     Update,
     InlineKeyboardButton,
@@ -260,6 +245,21 @@ main_menu_message_id = {}
 # Semaphor per limitare le richieste all'API di Telegram
 telegram_semaphore = asyncio.Semaphore(20)
 
+# Flask app per il keep-alive
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run():
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = threading.Thread(target=run)
+    t.start()
+
 # Funzioni di supporto
 # Funzione per inviare il messaggio con i canali da seguire
 async def send_subscription_message(user_id: int, context: CallbackContext):
@@ -397,17 +397,18 @@ async def forward_episode(update: Update, context: CallbackContext, channel_id: 
 
             next_episode_button = None
             if (episode + 1) <= max_episodes:
-                next_episode_button = InlineKeyboardButton("Ep. successivo ->", callback_data=f"forward|{query.data.split('|')[1]}|{series_name.lower().replace(' ', '_')}|{season}|{episode+1}")
+                next_episode_button = InlineKeyboardButton("Ep. successivo ->",
+                                                           callback_data=f"forward|{query.data.split('|')[1]}|{series_name.lower().replace(' ', '_')}|{season}|{episode + 1}")
 
             back_to_main_button = InlineKeyboardButton("⬅️ Torna all'inizio", callback_data="main_menu")
 
             if next_episode_button:
                 buttons.append([next_episode_button])
             buttons.append([back_to_main_button])
-
+            #aggiunta del messaggio amazon
             await context.bot.send_message(
                 user_id,
-                f" {episode_title}",
+                f"{episode_title}\n\nCiao! Sostieni il progetto: considera di fare i tuoi acquisti Amazon tramite il mio link affiliato:\n⚡https://amzn.to/432DGwn⚡\nPer te il prezzo non cambia, ma a me dai una grande aiuto! Usa il link prima dei tuoi acquisti o dai un'occhiata al mio canale offerte! Grazie per il supporto!",
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         except error.ChatNotFound:
@@ -426,209 +427,6 @@ async def forward_episode(update: Update, context: CallbackContext, channel_id: 
             await context.bot.send_message(user_id, f"⚠️ Errore nell'inoltro dell'episodio: {e}")
             logger.error(f"Errore nell'inoltro episodio: {e}")
 
-# Funzione per mostrare il menu delle stagioni
-async def show_seasons_menu(update: Update, context: CallbackContext, series_name: str, is_animation: bool = False):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    seasons = SERIES_TV[series_name]["seasons"] if not is_animation else ANIMATION[series_name]["seasons"]
-    buttons = [
-        [InlineKeyboardButton(
-            f"Stagione {season}",
-            callback_data=f"show_episodes|{'animation' if is_animation else 'series'}|{series_name}|{season}"
-        )]
-        for season in seasons.keys()
-    ]
-    buttons.extend(add_back_to_main_button())
-    await context.bot.send_message(
-        user_id, f"Seleziona la stagione di {series_name}:", reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-# Funzione per mostrare il menu degli episodi
-async def show_episodes_menu(update: Update, context: CallbackContext, series_name: str, season: int, is_animation: bool = False):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    # Decodifica il nome della serie dalla callback_data
-    series_name = decode_series_name(series_name)
-    season_data = SERIES_TV[series_name]["seasons"][season] if not is_animation else ANIMATION[series_name]["seasons"][season]
-    episode_buttons = [
-        InlineKeyboardButton(
-            f"Episodio {ep}",
-            callback_data=f"forward|{'animation' if is_animation else 'series'}|{series_name.lower().replace(' ', '_')}|{season}|{ep}",
-        )
-        for ep in range(1, season_data["num_episodes"] + 1)
-    ]
-    # Organizza i pulsanti su due colonne
-    buttons = [episode_buttons[i:i + 2] for i in range(0, len(episode_buttons), 2)]
-    buttons.extend(add_back_to_main_button())
-    await context.bot.send_message(
-        user_id, f"Seleziona l'episodio della stagione {season} di {series_name}:", reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-# Funzione per decodificare il nome della serie dalla callback_data
-def decode_series_name(encoded_name: str) -> str:
-    """Decodifica il nome della serie dalla callback_data."""
-    series_names = list(SERIES_TV.keys()) + list(ANIMATION.keys())
-    for name in series_names:
-        if encoded_name == name.lower().replace(" ", "_"):
-            return name
-    return encoded_name.replace("_", " ").title()  # fallback
-
-# Gestione delle callback
-async def callback_handler(update: Update, context: CallbackContext):
-    query = update.callback_query
-
-    if "|" in query.data:
-        data = query.data.split("|")
-    else:
-        data = query.data.split("_")
-
-    if data[0] == "open":
-        if data[1] == "series":
-            series_name = decode_series_name(data[2])
-            await show_seasons_menu(update, context, series_name)
-        elif data[1] == "animation":
-            series_name = decode_series_name(data[2])
-            await show_seasons_menu(update, context, series_name, is_animation=True)
-
-    elif data[0] == "show_episodes":
-        content_type = data[1]  # 'series' o 'animation'
-        series_series_name = data[2]
-        season = int(data[3])
-        await show_episodes_menu(update, context, series_name, season, is_animation=(content_type == "animation"))
-
-    elif data[0] == "forward":
-        content_type = data[1]  # series or animation
-        series_name = decode_series_name(data[2])
-        season = int(data[3])
-        episode = int(data[4])
-        if content_type == "series":
-            season_data = SERIES_TV[series_name]["seasons"][season]
-            channel_id = SERIES_TV[series_name]["channel_id"]
-        elif content_type == "animation":
-            season_data = ANIMATION[series_name]["seasons"][season]
-            channel_id = ANIMATION[series_name]["channel_id"]
-
-        message_id = season_data["start_episode"] + episode -1
-        await forward_episode(update, context, channel_id, message_id, f"Episodio {episode} della stagione {season} di {series_name}")
-
-    elif data[0] == "main":
-        await main_menu(update, context)
-
-# /start
-async def start(update: Update, context: CallbackContext):
-    user_id = update.message.chat_id
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-    else:
-        await show_main_menu(user_id, context)
-
-# Verifica dopo clic su "ho completato iscrizione"
-async def check_subscription(update: Update, context: CallbackContext):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    if not await is_user_subscribed(user_id, context):
-        try:
-            await query.message.delete()
-        except:
-            pass
-        await send_subscription_message(user_id, context)
-    else:
-        await show_main_menu(user_id, context, message_id=query.message.message_id)
-    await try_delete_forwarded_message(user_id, context)
-
-# Gestione apertura Film 2025
-async def open_film(update: Update, context: CallbackContext):
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except Exception as e:
-        logger.error(f"Errore durante l'eliminazione del messaggio in open_film: {e}")
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    link = await generate_invite_link(FILM_2025_CHANNEL_ID, context)
-    if link:
-        buttons = [[InlineKeyboardButton("Accedi a Film 2025", url=link)]]
-        buttons.extend(add_back_to_main_button())
-        await context.bot.send_message(
-            user_id, "Ecco il canale:", reply_markup=InlineKeyboardMarkup(buttons)
-        )
-    else:
-        buttons = add_back_to_main_button()
-        await context.bot.send_message(
-            user_id,
-            "⚠️ Errore nel generare il link per Film 2025",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-
-# Gestione apertura menu Serie TV
-async def open_serie_tv(update: Update, context: CallbackContext):
-    logger.info("Funzione open_serie_tv chiamata!")
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    buttons = [
-        [InlineKeyboardButton(series, callback_data=f"open_series_{series.lower()}")]
-        for series in sorted(SERIES_TV.keys())
-    ]
-    buttons.extend(add_back_to_main_button())
-    await context.bot.send_message(
-        user_id, "Seleziona una serie TV:", reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-# Gestione apertura menu Animazione
-async def open_animazione(update: Update, context: CallbackContext):
-    logger.info("Funzione open_animazione chiamata!")
-    query = update.callback_query
-    user_id = query.from_user.id
-    await query.answer()
-    await try_delete_forwarded_message(user_id, context)
-    try:
-        await query.message.delete()
-    except:
-        pass
-    if not await is_user_subscribed(user_id, context):
-        await send_subscription_message(user_id, context)
-        return
-    buttons = [
-        [InlineKeyboardButton(series, callback_data=f"open_animation_{series.lower()}")]
-        for series in sorted(ANIMATION.keys())
-    ]
-    buttons.extend(add_back_to_main_button())
-    await context.bot.send_message(
-        user_id, "Seleziona un'animazione:", reply_markup=InlineKeyboardMarkup(buttons)
-    )
 
 # Funzione per mostrare il menu delle stagioni
 async def show_seasons_menu(update: Update, context: CallbackContext, series_name: str, is_animation: bool = False):
@@ -730,8 +528,8 @@ async def callback_handler(update: Update, context: CallbackContext):
             season_data = ANIMATION[series_name]["seasons"][season]
             channel_id = ANIMATION[series_name]["channel_id"]
 
-        message_id = season_data["start_episode"] + episode -1
-        await forward_episode(update, context, channel_id, message_id, f"Episodio {episode} della stagione {season} di {series_name}")
+        message_id = season_data["start_episode"] + episode - 1
+        await forward_episode(update, context, channel_id, message_id,  f"Episodio {episode} della stagione {season} di {series_name}")
 
     elif data[0] == "main":
         await main_menu(update, context)
@@ -747,6 +545,106 @@ async def main_menu(update: Update, context: CallbackContext):
     except:
         pass
     await show_main_menu(user_id, context, message_id=main_menu_message_id.get(user_id))
+
+# /start
+async def start(update: Update, context: CallbackContext):
+    user_id = update.message.chat_id
+    if not await is_user_subscribed(user_id, context):
+        await send_subscription_message(user_id, context)
+    else:
+        await show_main_menu(user_id, context)
+
+# Verifica dopo clic su "ho completato iscrizione"
+async def check_subscription(update: Update, context: CallbackContext):
+    query = update.callback_query
+    user_id = query.from_user.id
+    await query.answer()
+    if not await is_user_subscribed(user_id, context):
+        try:
+            await query.message.delete()
+        except:
+            pass
+        await send_subscription_message(user_id, context)
+    else:
+        await show_main_menu(user_id, context, message_id=query.message.message_id)
+    await try_delete_forwarded_message(user_id, context)
+
+# Gestione apertura Film 2025
+async def open_film(update: Update, context: CallbackContext):
+    query = update.callback_query
+    user_id = query.from_user.id
+    await query.answer()
+    await try_delete_forwarded_message(user_id, context)
+    try:
+        await query.message.delete()
+    except Exception as e:
+        logger.error(f"Errore durante l'eliminazione del messaggio in open_film: {e}")
+        pass
+    if not await is_user_subscribed(user_id, context):
+        await send_subscription_message(user_id, context)
+        return
+    link = await generate_invite_link(FILM_2025_CHANNEL_ID, context)
+    if link:
+        buttons = [[InlineKeyboardButton("Accedi a Film 2025", url=link)]]
+        buttons.extend(add_back_to_main_button())
+        await context.bot.send_message(
+            user_id, "Ecco il canale:", reply_markup=InlineKeyboardMarkup(buttons)
+        )
+    else:
+        buttons = add_back_to_main_button()
+        await context.bot.send_message(
+            user_id,
+            "⚠️ Errore nel generare il link per Film 2025",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+
+# Gestione apertura menu Serie TV
+async def open_serie_tv(update: Update, context: CallbackContext):
+    logger.info("Funzione open_serie_tv chiamata!")
+    query = update.callback_query
+    user_id = query.from_user.id
+    await query.answer()
+    await try_delete_forwarded_message(user_id, context)
+    try:
+        await query.message.delete()
+    except:
+        pass
+    if not await is_user_subscribed(user_id, context):
+        await send_subscription_message(user_id, context)
+        return
+    buttons = [
+        [InlineKeyboardButton(series, callback_data=f"open_series_{series.lower()}")]
+        for series in sorted(SERIES_TV.keys())
+    ]
+    buttons.extend(add_back_to_main_button())
+    await context.bot.send_message(
+        user_id, "Seleziona una serie TV:", reply_markup=InlineKeyboardMarkup(buttons)
+    )
+
+# Gestione apertura menu Animazione
+async def open_animazione(update: Update, context: CallbackContext):
+    logger.info("Funzione open_animazione chiamata!")
+    query = update.callback_query
+    user_id = query.from_user.id
+    await query.answer()
+    await try_delete_forwarded_message(user_id, context)
+    try:
+        await query.message.delete()
+    except:
+        pass
+    if not await is_user_subscribed(user_id, context):
+        await send_subscription_message(user_id, context)
+        return
+    buttons = [
+        [InlineKeyboardButton(series, callback_data=f"open_animation_{series.lower()}")]
+        for series in sorted(ANIMATION.keys())
+    ]
+    buttons.extend(add_back_to_main_button())
+    await context.bot.send_message(
+        user_id, "Seleziona un'animazione:", reply_markup=InlineKeyboardMarkup(buttons)
+    )
+
+
 
 # Setup del bot
 def main():
