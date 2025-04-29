@@ -120,7 +120,7 @@ SERIES_TV = {
             2: {"start_episode": 13, "num_episodes": 2},
         },
     },
-    "LOL - Chi Ride è Fuori": {
+    "Lol Chi Ride è Fuori": {
         "channel_id": -1002531644367,
         "seasons": {
             1: {"start_episode": 3, "num_episodes": 6},
@@ -290,14 +290,9 @@ def build_main_menu():
 
 async def show_main_menu(user_id: int, context: CallbackContext, message_id: int = None):
     menu_text = (
-        "⭐️ Clicca https://temu.to/k/en0oscwfxky
-"
-        "per richiedere subito il tuo pacchetto buoni di 100€!
-
-"
-        "Un'altra sorpresa per te! Fai clic su https://temu.to/k/er7ic7cdxyz per guadagnare insieme a me🤝!
-
-"
+        "⭐️ Clicca https://temu.to/k/en0oscwfxky"
+        "per richiedere subito il tuo pacchetto buoni di 100€!"
+        "Un'altra sorpresa per te! Fai clic su https://temu.to/k/er7ic7cdxyz per guadagnare insieme a me🤝!"
         "Menu Principale:"
     )
     reply_markup = build_main_menu()
