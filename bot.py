@@ -408,7 +408,7 @@ async def forward_episode(update: Update, context: CallbackContext, channel_id: 
             #aggiunta del messaggio amazon
             await context.bot.send_message(
                 user_id,
-                f"{episode_title}\n\nCiao! Sostieni il progetto: considera di fare i tuoi acquisti Amazon tramite il mio link affiliato:\n⚡https://amzn.to/432DGwn⚡\nPer te il prezzo non cambia, ma a me dai una grande aiuto! Usa il link prima dei tuoi acquisti o dai un'occhiata al mio canale offerte! Grazie per il supporto!",
+                f"{episode_title}\n\nCiao! Sostieni il progetto: considera di fare i tuoi acquisti Amazon tramite il mio link affiliato:\n⚡ https://amzn.to/432DGwn ⚡\nPer te il prezzo non cambia, ma a me dai una grande aiuto! Usa il link prima dei tuoi acquisti o dai un'occhiata al mio canale offerte! Grazie per il supporto!",
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         except error.ChatNotFound:
