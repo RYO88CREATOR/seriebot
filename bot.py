@@ -107,6 +107,15 @@ SERIES_TV = {
             2: {"start_episode": 13, "num_episodes": 2},
         },
     },
+    "LOL - Chi Ride è Fuori": {
+        "channel_id": -1002531644367,
+        "seasons": {
+            1: {"start_episode": 3, "num_episodes": 6},
+            2: {"start_episode": 10, "num_episodes": 6},
+            3: {"start_episode": 19, "num_episodes": 6},
+            4: {"start_episode": 32, "num_episodes": 6},
+        },
+    },
     "Lotr Gli Anelli Del Potere": {
         "channel_id": -1002560421098,
         "seasons": {
@@ -116,6 +125,10 @@ SERIES_TV = {
     },
     "Marianne": {
         "channel_id": -1002617020563,
+        "seasons": {1: {"start_episode": 3, "num_episodes": 8}},
+    },
+    "Mercoledì": {
+        "channel_id": -1002365102959,
         "seasons": {1: {"start_episode": 3, "num_episodes": 8}},
     },
     "Shogun": {
@@ -134,7 +147,7 @@ SERIES_TV = {
         "seasons": {
             1: {"start_episode": 3, "num_episodes": 12},
             2: {"start_episode": 16, "num_episodes": 3},
-        },    
+        },
     },
     "Il Problema Dei 3 Corpi": {
         "channel_id": -1002592753657,
@@ -198,6 +211,10 @@ ANIMATION = {
         "channel_id": -1002621270196,
         "seasons": {1: {"start_episode": 2, "num_episodes": 8}},
     },
+    "Hazbin Hotel": {
+        "channel_id": -1002560801602,
+        "seasons": {1: {"start_episode": 3, "num_episodes": 8}},
+    },
     "I Simpson": {
         "channel_id": -1002558310523,
         "seasons": {
@@ -231,9 +248,7 @@ ANIMATION = {
     },
     "Tekkaman": {
         "channel_id": -1002697417639,
-        "seasons": {1: {"start_episode": 3,
-"num_episodes": 25},
-        },
+        "seasons": {1: {"start_episode": 3, "num_episodes": 25}},
     },
 }
 
