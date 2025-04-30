@@ -128,6 +128,13 @@ SERIES_TV = {
             2: {"start_episode": 13, "num_episodes": 7},
         },
     },
+    "Star Trek Strange New Worlds": {
+        "channel_id": -1002338894564,
+        "seasons": {
+            1: {"start_episode": 3, "num_episodes": 10},
+            2: {"start_episode": 14, "num_episodes": 10},
+        },
+    },
     "Star Wars Andor": {
         "channel_id": -1002568386722,
         "seasons": {
