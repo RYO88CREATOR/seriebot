@@ -78,6 +78,16 @@ SERIES_TV = {
             8: {"start_episode": 77, "num_episodes": 6},
         },
     },
+    "Gomorra": {
+        "channel_id": -1002364865240,
+        "seasons": {
+            1: {"start_episode": 3, "num_episodes": 12},
+            2: {"start_episode": 16, "num_episodes": 12},
+            3: {"start_episode": 29, "num_episodes": 12},
+            4: {"start_episode": 42, "num_episodes": 12},
+            5: {"start_episode": 55, "num_episodes": 10},
+        },
+    },
     "House Of The Dragon": {
         "channel_id": -1002621025753,
         "seasons": {
@@ -222,6 +232,14 @@ ANIMATION = {
             9: {"start_episode": 189, "num_episodes": 25},
             10: {"start_episode": 215, "num_episodes": 23},
             11: {"start_episode": 239, "num_episodes": 20},
+            12: {"start_episode": 260, "num_episodes": 21},
+            13: {"start_episode": 282, "num_episodes": 22},
+            14: {"start_episode": 305, "num_episodes": 22},
+            15: {"start_episode": 328, "num_episodes": 22},
+            16: {"start_episode": 351, "num_episodes": 21},
+            17: {"start_episode": 373, "num_episodes": 22},
+            18: {"start_episode": 396, "num_episodes": 22},
+            19: {"start_episode": 419, "num_episodes": 20},
         },
     },
     "Ranma": {
