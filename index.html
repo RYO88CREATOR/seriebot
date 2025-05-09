@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Serie TV</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #search {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+    }
+
+    .serie {
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    .serie img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .stagioni {
+      margin-top: 0.5rem;
+    }
+
+    .episodi {
+      display: none;
+      text-align: left;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #2c2c2c;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #333;
+      color: white;
+      padding: 6px 12px;
+      margin-top: 0.3rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    a {
+      color: #4da6ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>Catalogo Serie</h1>
+  <input type="text" id="search" placeholder="Cerca una serie...">
+
+  <div id="catalogo" class="grid"></div>
+
+  <script>
+    let tutteLeSerie = [];
+
+    fetch("videos.json")
+      .then(res => res.json())
+      .then(dati => {
+        tutteLeSerie = dati;
+        mostraSerie(dati);
+      });
+
+    function mostraSerie(serie) {
+      const container = document.getElementById("catalogo");
+      container.innerHTML = "";
+
+      serie.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "serie";
+
+        const img = document.createElement("img");
+        img.src = s.copertina || "https://via.placeholder.com/150x220?text=Copertina";
+        img.alt = s.titolo;
+
+        const titolo = document.createElement("h3");
+        titolo.textContent = s.titolo;
+
+        const stagioni = document.createElement("div");
+        stagioni.className = "stagioni";
+
+        s.stagioni.forEach(st => {
+          const stagioneDiv = document.createElement("div");
+
+          const button = document.createElement("button");
+          button.textContent = `Stagione ${st.stagione} - Mostra episodi`;
+          button.onclick = () => {
+            episodiDiv.style.display = episodiDiv.style.display === "none" ? "block" : "none";
+            button.textContent = `Stagione ${st.stagione} - ` + (episodiDiv.style.display === "none" ? "Mostra episodi" : "Nascondi episodi");
+          };
+
+          const episodiDiv = document.createElement("div");
+          episodiDiv.className = "episodi";
+
+          st.episodi.forEach(e => {
+            const titoloEp = document.createElement("p");
+            titoloEp.innerHTML = `<strong>${e.titolo}</strong><br>`;
+            e.fonti.forEach(link => {
+              const a = document.createElement("a");
+              a.href = link;
+              a.target = "_blank";
+              a.textContent = link;
+              titoloEp.appendChild(document.createElement("br"));
+              titoloEp.appendChild(a);
+            });
+            episodiDiv.appendChild(titoloEp);
+          });
+
+          stagioneDiv.appendChild(button);
+          stagioneDiv.appendChild(episodiDiv);
+          stagioni.appendChild(stagioneDiv);
+        });
+
+        div.appendChild(img);
+        div.appendChild(titolo);
+        div.appendChild(stagioni);
+
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("search").addEventListener("input", function () {
+      const q = this.value.toLowerCase();
+      const filtrate = tutteLeSerie.filter(s => s.titolo.toLowerCase().includes(q));
+      mostraSerie(filtrate);
+    });
+  </script>
+</body>
+</html>
