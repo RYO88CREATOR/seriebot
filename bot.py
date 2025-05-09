@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 # Link Web App
-WEBAPP_LINK = "https://ryo88creator.github.io/video-vetrina/"
+WEBAPP_LINK = "https://ryo88creator.github.io/seriebot/"
 
 # Canali obbligatori
 REQUIRED_CHANNELS = ["@NostraReteCanali", "@amznoes"]
