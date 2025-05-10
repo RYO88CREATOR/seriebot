@@ -2,9 +2,10 @@ import asyncio
 import logging
 import os
 import json
-from flask import Flask, send_file
+import base64
 import threading
-from git import Repo
+import requests
+from flask import Flask, send_file
 from telegram import (
     Update,
     InlineKeyboardButton,
@@ -21,10 +22,12 @@ from telegram.ext import (
     filters,
 )
 
-GITHUB_REPO = "https://github.com/RYO88CREATOR/seriebot.git"
+# Configurazione GitHub
+GITHUB_REPO = "RYO88CREATOR/seriebot"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 GIT_AUTHOR_NAME = "AutoBot"
 GIT_AUTHOR_EMAIL = "bot@example.com"
+GITHUB_BRANCH = "main"
 
 # Logging
 logging.basicConfig(
@@ -44,7 +47,39 @@ REQUIRED_CHANNELS = ["@NostraReteCanali", "@amznoes"]
 # Percorso file offerte
 OFFERTE_FILE = "offerte.json"
 
-# Funzione START
+# ---- Funzione per aggiornare offerte.json via API GitHub ----
+def upload_offerte_to_github():
+    path = "offerte.json"
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
+
+    try:
+        # Ottieni SHA attuale del file
+        r = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
+        r.raise_for_status()
+        sha = r.json()["sha"]
+
+        with open(OFFERTE_FILE, "rb") as f:
+            content = base64.b64encode(f.read()).decode("utf-8")
+
+        data = {
+            "message": "Aggiorna offerte.json automaticamente via API",
+            "content": content,
+            "sha": sha,
+            "branch": GITHUB_BRANCH,
+            "committer": {
+                "name": GIT_AUTHOR_NAME,
+                "email": GIT_AUTHOR_EMAIL,
+            },
+        }
+
+        res = requests.put(url, headers={"Authorization": f"token {GITHUB_TOKEN}"}, json=data)
+        res.raise_for_status()
+        print("✅ Push su GitHub completato (via API).")
+
+    except Exception as e:
+        print(f"❌ Errore API GitHub: {e}")
+
+# ---- HANDLER START ----
 async def start(update: Update, context: CallbackContext):
     user = update.effective_user
     chat_id = update.effective_chat.id
@@ -67,7 +102,7 @@ async def start(update: Update, context: CallbackContext):
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("\u2705 Accesso autorizzato!", reply_markup=reply_markup)
 
-# Gestione click
+# ---- HANDLER CALLBACK ----
 async def generate_catalog_button(update: Update, context: CallbackContext):
     query = update.callback_query
     user = query.from_user
@@ -109,7 +144,7 @@ async def generate_catalog_button(update: Update, context: CallbackContext):
     reply_markup_back = InlineKeyboardMarkup(keyboard_back)
     await context.bot.send_message(chat_id=msg.chat_id, text="\U0001F501", reply_markup=reply_markup_back)
 
-# Funzione per salvare offerte da messaggi del canale
+# ---- HANDLER MESSAGGI DAL CANALE ----
 async def salva_offerta(update: Update, context: CallbackContext):
     message = update.effective_message
     if message.chat.username != "amznoes":
@@ -143,19 +178,9 @@ async def salva_offerta(update: Update, context: CallbackContext):
     with open(OFFERTE_FILE, "w", encoding="utf-8") as f:
         json.dump(offerte, f, ensure_ascii=False, indent=2)
 
-    # Esegui commit & push
-    try:
-        repo = Repo(os.getcwd())
-        repo.git.add(OFFERTE_FILE)
-        repo.index.commit("Aggiorna offerte.json automaticamente")
-        origin = repo.remote(name="origin")
-        origin.set_url(f"https://{GITHUB_TOKEN}@github.com/RYO88CREATOR/seriebot.git")
-        origin.push()
-        print("✅ Push su GitHub completato.")
-    except Exception as e:
-        print(f"❌ Errore durante il push: {e}")
+    upload_offerte_to_github()
 
-# Flask app per Render
+# ---- FLASK APP PER RENDER ----
 app = Flask(__name__)
 
 @app.route("/")
@@ -175,7 +200,7 @@ def keep_alive():
     t = threading.Thread(target=run)
     t.start()
 
-# Avvio bot
+# ---- AVVIO BOT ----
 if __name__ == '__main__':
     keep_alive()
     application = ApplicationBuilder().token(BOT_TOKEN).build()
