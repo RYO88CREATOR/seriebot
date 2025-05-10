@@ -166,7 +166,10 @@ async def salva_offerta(update: Update, context: CallbackContext):
     if message.photo:
         photo = message.photo[-1]
         file = await context.bot.get_file(photo.file_id)
-        img_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file.file_path}"
+        if file.file_path.startswith("http"):
+            img_url = file.file_path
+        else:
+            img_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file.file_path}"
 
     # Costruisci il link diretto al messaggio del canale
     channel_id = message.chat.id
