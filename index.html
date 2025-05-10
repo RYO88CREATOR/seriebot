@@ -238,6 +238,51 @@
         </div>
     </div>
 
+    <section id="offerte" class="offerte-section">
+        <h2>🔥 Offerte Amazon</h2>
+        <div id="offerte-container" class="offerte-container"></div>
+    </section>
+    <style>
+        .offerte-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+        .offerta-card {
+          width: 160px;
+          background: #f9f9f9;
+          border: 1px solid #ccc;
+          padding: 0.5rem;
+          border-radius: 10px;
+          text-align: center;
+          font-size: 14px;
+        }
+        .offerta-card img {
+          width: 100%;
+          height: auto;
+          border-radius: 8px;
+        }
+      </style>
+      <script>
+        fetch("https://seriebot.onrender.com/offerte.json")
+          .then(response => response.json())
+          .then(data => {
+            const container = document.getElementById("offerte-container");
+            data.forEach(offerta => {
+              const div = document.createElement("div");
+              div.className = "offerta-card";
+              div.innerHTML = `
+                <a href="${offerta.link}" target="_blank">
+                  <img src="${offerta.img}" alt="Offerta">
+                  <p>${offerta.titolo}</p>
+                </a>
+              `;
+              container.appendChild(div);
+            });
+          })
+          .catch(err => console.error("Errore nel caricamento delle offerte:", err));
+      </script>
+
     <div id="dettaglioSerieContainer">
         <button id="frecciaIndietro">←</button>
         <div id="dettaglioSerie">
