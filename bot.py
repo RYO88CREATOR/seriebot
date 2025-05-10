@@ -4,6 +4,7 @@ import os
 import json
 from flask import Flask, send_file
 import threading
+from git import Repo
 from telegram import (
     Update,
     InlineKeyboardButton,
@@ -19,6 +20,11 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+
+GITHUB_REPO = "https://github.com/RYO88CREATOR/seriebot.git"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+GIT_AUTHOR_NAME = "AutoBot"
+GIT_AUTHOR_EMAIL = "bot@example.com"
 
 # Logging
 logging.basicConfig(
@@ -132,10 +138,22 @@ async def salva_offerta(update: Update, context: CallbackContext):
         offerte = []
 
     offerte.insert(0, offerta)
-    offerte = offerte[:15]  # massimo 15 offerte
+    offerte = offerte[:15]
 
     with open(OFFERTE_FILE, "w", encoding="utf-8") as f:
         json.dump(offerte, f, ensure_ascii=False, indent=2)
+
+    # Esegui commit & push
+    try:
+        repo = Repo(os.getcwd())
+        repo.git.add(OFFERTE_FILE)
+        repo.index.commit("Aggiorna offerte.json automaticamente")
+        origin = repo.remote(name="origin")
+        origin.set_url(f"https://{GITHUB_TOKEN}@github.com/RYO88CREATOR/seriebot.git")
+        origin.push()
+        print("✅ Push su GitHub completato.")
+    except Exception as e:
+        print(f"❌ Errore durante il push: {e}")
 
 # Flask app per Render
 app = Flask(__name__)
