@@ -329,29 +329,45 @@
         episodiDiv.className = "episodi";
         episodiDiv.style.display = "none";
 
-        // Aggiungi episodi
-        if (stagione.episodi && stagione.episodi.length > 0) {
-            stagione.episodi.forEach(episodio => {
-                const epDiv = document.createElement("div");
-                epDiv.className = "episodio";
+       // Sostituisci la parte degli episodi con questo codice:
+if (stagione.episodi && stagione.episodi.length > 0) {
+  stagione.episodi.forEach(episodio => {
+    const epDiv = document.createElement("div");
+    epDiv.className = "episodio";
+    
+    const titoloEp = document.createElement("p");
+    titoloEp.textContent = episodio.titolo || `Episodio ${episodio.episodio || ''}`.trim();
 
-                const titoloEp = document.createElement("p");
-                titoloEp.textContent = episodio.titolo || `Episodio sconosciuto`;
+    // 1. Filtra e ordina le fonti
+    const fontiUniche = [...new Set(episodio.links || episodio.fonti || [])]
+      .filter(fonte => fonte && fonte.includes('http'))
+      .sort((a, b) => a.localeCompare(b)); // Ordina alfabeticamente
 
-                // Usa 'links' o 'fonti' come fallback e filtra le fonti vuote
-                const fonti = (episodio.links || episodio.fonti || []).filter(fonte => fonte !== "");
-                fonti.forEach((fonte, i) => {
-                    const btn = document.createElement("button");
-                    btn.textContent = `Fonte ${i+1}`;
-                    btn.onclick = (e) => {
-                        e.preventDefault();
-                        window.open(fonte, "_blank");
-                    };
-                    epDiv.appendChild(btn);
-                });
+    // 2. Mostra solo le prime 2 fonti se ce ne sono troppe
+    const fontiDaMostrare = fontiUniche.slice(0, 2);
 
-                episodiDiv.appendChild(epDiv);
-            });
+    fontiDaMostrare.forEach((fonte, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = `Fonte ${i+1}`;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        window.open(fonte, "_blank");
+      };
+      epDiv.appendChild(btn);
+    });
+
+    // 3. Aggiungi contatore se ci sono più fonti di quelle mostrate
+    if (fontiUniche.length > 2) {
+      const extra = document.createElement("span");
+      extra.textContent = ` (+${fontiUniche.length - 2} altre)`;
+      extra.style.marginLeft = "8px";
+      extra.style.color = "#aaa";
+      epDiv.appendChild(extra);
+    }
+
+    episodiDiv.appendChild(epDiv);
+  });
+}
         } else {
             episodiDiv.innerHTML = "<p>Nessun episodio disponibile</p>";
         }
