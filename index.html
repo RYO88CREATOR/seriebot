@@ -300,76 +300,76 @@
             }
 
             function mostraDettaglioSerie(serie) {
-                // Debug: verifica i dati in console
-                console.log("Dettaglio serie:", serie);
+    // Debug: verifica i dati in console
+    console.log("Dettaglio serie:", serie);
 
-                // Imposta copertina e titolo
-                dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
-                dettaglioTitolo.textContent = serie.titolo;
+    // Imposta copertina e titolo
+    dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
+    dettaglioTitolo.textContent = serie.titolo;
 
-                // Pulisci le stagioni precedenti
-                dettaglioStagioni.innerHTML = "";
+    // Pulisci le stagioni precedenti
+    dettaglioStagioni.innerHTML = "";
 
-                // Verifica se ci sono stagioni
-                if (!serie.stagioni || serie.stagioni.length === 0) {
-                    dettaglioStagioni.innerHTML = "<p>Nessuna stagione disponibile</p>";
-                    dettaglioContainer.style.display = "block";
-                    return;
-                }
+    // Verifica se ci sono stagioni
+    if (!serie.stagioni || serie.stagioni.length === 0) {
+        dettaglioStagioni.innerHTML = "<p>Nessuna stagione disponibile</p>";
+        dettaglioContainer.style.display = "block";
+        return;
+    }
 
-                // Aggiungi ogni stagione
-                serie.stagioni.forEach(stagione => {
-                    const stagioneDiv = document.createElement("div");
-                    stagioneDiv.className = "stagione";
+    // Aggiungi ogni stagione
+    serie.stagioni.forEach(stagione => {
+        const stagioneDiv = document.createElement("div");
+        stagioneDiv.className = "stagione";
 
-                    const titoloStagione = document.createElement("h3");
-                    titoloStagione.textContent = `Stagione ${stagione.stagione}`;
+        const titoloStagione = document.createElement("h3");
+        titoloStagione.textContent = `Stagione ${stagione.stagione}`;
 
-                    const episodiDiv = document.createElement("div");
-                    episodiDiv.className = "episodi";
-                    episodiDiv.style.display = "none";
+        const episodiDiv = document.createElement("div");
+        episodiDiv.className = "episodi";
+        episodiDiv.style.display = "none";
 
-                    // Aggiungi episodi
-                    if (stagione.episodi && stagione.episodi.length > 0) {
-                        stagione.episodi.forEach(episodio => {
-                            const epDiv = document.createElement("div");
-                            epDiv.className = "episodio";
+        // Aggiungi episodi
+        if (stagione.episodi && stagione.episodi.length > 0) {
+            stagione.episodi.forEach(episodio => {
+                const epDiv = document.createElement("div");
+                epDiv.className = "episodio";
 
-                            const titoloEp = document.createElement("p");
-                            titoloEp.textContent = episodio.titolo || `Episodio sconosciuto`;
+                const titoloEp = document.createElement("p");
+                titoloEp.textContent = episodio.titolo || `Episodio sconosciuto`;
 
-                            // Usa 'links' o 'fonti' come fallback
-                            const fonti = episodio.links || episodio.fonti || [];
-                            fonti.forEach((fonte, i) => {
-                                const btn = document.createElement("button");
-                                btn.textContent = `Fonte ${i+1}`;
-                                btn.onclick = (e) => {
-                                    e.preventDefault();
-                                    window.open(fonte, "_blank");
-                                };
-                                epDiv.appendChild(btn);
-                            });
-
-                            episodiDiv.appendChild(epDiv);
-                        });
-                    } else {
-                        episodiDiv.innerHTML = "<p>Nessun episodio disponibile</p>";
-                    }
-
-                    // Gestione click sulla stagione
-                    titoloStagione.onclick = () => {
-                        episodiDiv.style.display = episodiDiv.style.display === "none" ? "block" : "none";
-                        stagioneDiv.classList.toggle("aperta");
+                // Usa 'links' o 'fonti' come fallback e filtra le fonti vuote
+                const fonti = (episodio.links || episodio.fonti || []).filter(fonte => fonte !== "");
+                fonti.forEach((fonte, i) => {
+                    const btn = document.createElement("button");
+                    btn.textContent = `Fonte ${i+1}`;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        window.open(fonte, "_blank");
                     };
-
-                    stagioneDiv.appendChild(titoloStagione);
-                    stagioneDiv.appendChild(episodiDiv);
-                    dettaglioStagioni.appendChild(stagioneDiv);
+                    epDiv.appendChild(btn);
                 });
 
-                // Mostra il container
-                dettaglioContainer.style.display = "block";
-            }
+                episodiDiv.appendChild(epDiv);
+            });
+        } else {
+            episodiDiv.innerHTML = "<p>Nessun episodio disponibile</p>";
+        }
+
+        // Gestione click sulla stagione
+        titoloStagione.onclick = () => {
+            episodiDiv.style.display = episodiDiv.style.display === "none" ? "block" : "none";
+            stagioneDiv.classList.toggle("aperta");
+        };
+
+        stagioneDiv.appendChild(titoloStagione);
+        stagioneDiv.appendChild(episodiDiv);
+        dettaglioStagioni.appendChild(stagioneDiv);
+    });
+
+    // Mostra il container
+    dettaglioContainer.style.display = "block";
+}
 
             frecciaIndietro.addEventListener("click", () => {
                 dettaglioContainer.style.display = "none";
