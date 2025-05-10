@@ -265,22 +265,22 @@
       </style>
       <script>
         fetch("https://seriebot.onrender.com/offerte.json")
-          .then(response => response.json())
-          .then(data => {
-            const container = document.getElementById("offerte-container");
-            data.forEach(offerta => {
-              const div = document.createElement("div");
-              div.className = "offerta-card";
-              div.innerHTML = `
-                <a href="${offerta.link}" target="_blank">
-                  <img src="${offerta.img}" alt="Offerta">
-                  <p>${offerta.titolo}</p>
-                </a>
-              `;
-              container.appendChild(div);
-            });
-          })
-          .catch(err => console.error("Errore nel caricamento delle offerte:", err));
+  .then(response => response.json())
+  .then(data => {
+    const container = document.getElementById("offerte-container");
+    data.forEach(offerta => {
+      const div = document.createElement("div");
+      div.className = "offerta-card";
+      div.innerHTML = `
+        <a href="${offerta.telegram_link}" target="_blank">
+          <img src="${offerta.img}" alt="${offerta.titolo}">
+          <p>${offerta.titolo}</p>
+        </a>
+      `;
+      container.appendChild(div);
+    });
+  })
+  .catch(err => console.error("Errore nel caricamento delle offerte:", err));
       </script>
 
     <div id="dettaglioSerieContainer">
