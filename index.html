@@ -1,387 +1,409 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catalogo Serie</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background-color: #121212;
-      color: #fff;
-      -webkit-user-select: none;
-      user-select: none;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Catalogo Serie</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background-color: #121212;
+            color: #fff;
+            -webkit-user-select: none;
+            user-select: none;
+        }
 
-    header {
-      background-color: #1f1f1f;
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-    }
+        header {
+            background-color: #1f1f1f;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
 
-    #barraRicerca {
-      width: 90%;
-      padding: 10px;
-      margin: 10px auto;
-      display: block;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      background-color: #2d2d2d;
-      color: white;
-    }
+        #barraRicerca {
+            width: 90%;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            background-color: #2d2d2d;
+            color: white;
+        }
 
-    #catalogoWrapper {
-      overflow-x: auto;
-      display: flex;
-      gap: 12px;
-      padding: 10px;
-      scroll-snap-type: x mandatory;
-    }
+        #catalogoWrapper {
+            overflow-x: auto;
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+        }
 
-    .serie-card {
-      background-color: #1e1e1e;
-      border-radius: 8px;
-      flex: 0 0 auto;
-      width: 140px;
-      scroll-snap-align: start;
-      cursor: pointer;
-      padding: 6px;
-      text-align: center;
-      transition: transform 0.2s;
-    }
+        .serie-card {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            flex: 0 0 auto;
+            width: 140px;
+            scroll-snap-align: start;
+            cursor: pointer;
+            padding: 6px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
 
-    .serie-card:hover {
-      transform: scale(1.03);
-    }
+        .serie-card:hover {
+            transform: scale(1.03);
+        }
 
-    .serie-card img {
-      width: 100%;
-      height: 210px;
-      border-radius: 6px;
-      object-fit: cover;
-      pointer-events: none;
-    }
+        .serie-card img {
+            width: 100%;
+            height: 210px;
+            border-radius: 6px;
+            object-fit: cover;
+            pointer-events: none;
+        }
 
-    .serie-card h2 {
-      font-size: 14px;
-      margin: 8px 0 0;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+        .serie-card h2 {
+            font-size: 14px;
+            margin: 8px 0 0;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-     #vediSenzaPubblicitaGeneraleContainer {
-      margin: 15px auto;
-      text-align: center;
-    }
+        #vediSenzaPubblicitaGeneraleContainer {
+            margin: 15px auto;
+            text-align: center;
+        }
 
-    #vediSenzaPubblicitaGeneraleButton {
-      background-color: #333;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+        #vediSenzaPubblicitaGeneraleButton {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    #vediSenzaPubblicitaGeneraleTendina {
-      background-color: #222;
-      color: #eee;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 10px;
-      font-size: 14px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      display: none;
-    }
+        #vediSenzaPubblicitaGeneraleTendina {
+            background-color: #222;
+            color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
 
-    #dettaglioSerieContainer {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.95);
-      z-index: 1000;
-      overflow-y: auto;
-      padding: 15px;
-    }
+        #dettaglioSerieContainer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 15px;
+        }
 
-    #dettaglioSerie {
-      background-color: #1e1e1e;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
+        #dettaglioSerie {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
 
-    #dettaglioCopertina {
-      width: 120px;
-      float: left;
-      margin-right: 15px;
-      border-radius: 8px;
-      pointer-events: none;
-    }
+        #dettaglioCopertina {
+            width: 120px;
+            float: left;
+            margin-right: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
 
-    #dettaglioTitolo {
-      font-size: 20px;
-      margin-top: 0;
-      color: #fff;
-    }
+        #dettaglioTitolo {
+            font-size: 20px;
+            margin-top: 0;
+            color: #fff;
+        }
 
-    .stagione {
-      margin-top: 20px;
-      clear: both;
-    }
+        .stagione {
+            margin-top: 20px;
+            clear: both;
+        }
 
-    .stagione h3 {
-      background-color: #333;
-      padding: 10px;
-      margin: 0;
-      cursor: pointer;
-      border-radius: 5px;
-    }
+        .stagione h3 {
+            background-color: #333;
+            padding: 10px;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
 
-    .episodi {
-      display: none;
-      padding: 10px;
-      background-color: #222;
-      border-radius: 0 0 5px 5px;
-    }
+        .episodi {
+            display: none;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 0 0 5px 5px;
+        }
 
-    .stagione.aperta .episodi {
-      display: block;
-    }
+        .stagione.aperta .episodi {
+            display: block;
+        }
 
-    .episodio {
-      margin-bottom: 10px;
-      padding: 8px;
-      background-color: #2d2d2d;
-      border-radius: 4px;
-    }
+        .episodio {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+            display: flex; /* Usa flexbox per allineare titolo e bottoni */
+            align-items: center; /* Allinea verticalmente gli elementi */
+            justify-content: space-between; /* Spazia gli elementi */
+        }
 
-    .episodio p {
-      margin: 0 0 8px 0;
-      font-weight: bold;
-    }
+        .episodio p {
+            margin: 0;
+            font-weight: bold;
+        }
 
-    .episodio button {
-      margin-right: 5px;
-      padding: 6px 10px;
-      border: none;
-      border-radius: 5px;
-      background-color: #4fc3f7;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
+        .episodio button {
+            margin-left: 5px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4fc3f7;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    #frecciaIndietro {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      background: none;
-      border: none;
-      font-size: 26px;
-      color: white;
-      cursor: pointer;
-      z-index: 1100;
-    }
+        .episodio .fonti-container {
+            display: flex;
+            gap: 5px;
+        }
 
-    @media (max-width: 600px) {
-      #dettaglioCopertina {
-        width: 80px;
-      }
-      .serie-card {
-        width: 120px;
-      }
-    }
-  </style>
+        .episodio .altre-fonti {
+            margin-left: 8px;
+            color: #aaa;
+        }
+
+        #frecciaIndietro {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: white;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        @media (max-width: 600px) {
+            #dettaglioCopertina {
+                width: 80px;
+            }
+            .serie-card {
+                width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>Catalogo Serie</header>
+    <header>Catalogo Serie</header>
 
-  <input type="text" id="barraRicerca" placeholder="Cerca una serie..." />
+    <input type="text" id="barraRicerca" placeholder="Cerca una serie..." />
 
-  <div id="catalogoWrapper"></div>
+    <div id="catalogoWrapper"></div>
 
-  <div id="vediSenzaPubblicitaGeneraleContainer">
-    <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
-    <div id="vediSenzaPubblicitaGeneraleTendina">
-      Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
-    <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
-    <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
-      <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+    <div id="vediSenzaPubblicitaGeneraleContainer">
+        <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
+        <div id="vediSenzaPubblicitaGeneraleTendina">
+            Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
+        <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
+        <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
+            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+        </div>
     </div>
-  </div>
 
-  <div id="dettaglioSerieContainer">
-    <button id="frecciaIndietro">←</button>
-    <div id="dettaglioSerie">
-      <img id="dettaglioCopertina" src="" alt="Copertina" />
-      <h2 id="dettaglioTitolo"></h2>
-      <div id="dettaglioStagioni"></div>
+    <div id="dettaglioSerieContainer">
+        <button id="frecciaIndietro">←</button>
+        <div id="dettaglioSerie">
+            <img id="dettaglioCopertina" src="" alt="Copertina" />
+            <h2 id="dettaglioTitolo"></h2>
+            <div id="dettaglioStagioni"></div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const barraRicerca = document.getElementById("barraRicerca");
-      const catalogoWrapper = document.getElementById("catalogoWrapper");
-      const dettaglioContainer = document.getElementById("dettaglioSerieContainer");
-      const dettaglioCopertina = document.getElementById("dettaglioCopertina");
-      const dettaglioTitolo = document.getElementById("dettaglioTitolo");
-      const dettaglioStagioni = document.getElementById("dettaglioStagioni");
-      const frecciaIndietro = document.getElementById("frecciaIndietro");
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const barraRicerca = document.getElementById("barraRicerca");
+            const catalogoWrapper = document.getElementById("catalogoWrapper");
+            const dettaglioContainer = document.getElementById("dettaglioSerieContainer");
+            const dettaglioCopertina = document.getElementById("dettaglioCopertina");
+            const dettaglioTitolo = document.getElementById("dettaglioTitolo");
+            const dettaglioStagioni = document.getElementById("dettaglioStagioni");
+            const frecciaIndietro = document.getElementById("frecciaIndietro");
+            const vediSenzaPubblicitaGeneraleButton = document.getElementById("vediSenzaPubblicitaGeneraleButton");
+            const vediSenzaPubblicitaGeneraleTendina = document.getElementById("vediSenzaPubblicitaGeneraleTendina");
 
-      let serieData = [];
+            let serieData = [];
 
-      fetch("videos.json")
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          serieData = data;
-          mostraCatalogo(data);
-          console.log("Dati caricati correttamente");
-        })
-        .catch(err => {
-          catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
-          console.error("Errore fetch:", err);
-        });
-
-      function mostraCatalogo(lista) {
-        catalogoWrapper.innerHTML = "";
-        if (lista.length === 0) {
-          catalogoWrapper.innerHTML = "<p style='text-align:center'>Nessun risultato trovato</p>";
-          return;
-        }
-
-        lista.forEach((serie, index) => {
-          const card = document.createElement("div");
-          card.className = "serie-card";
-          card.dataset.index = index;
-
-          const img = document.createElement("img");
-          img.src = serie.copertina || "https://via.placeholder.com/140x210?text=Copertina";
-          img.alt = serie.titolo;
-          img.loading = "lazy";
-
-          const titolo = document.createElement("h2");
-          titolo.textContent = serie.titolo;
-
-          card.appendChild(img);
-          card.appendChild(titolo);
-          catalogoWrapper.appendChild(card);
-
-          card.addEventListener("click", () => mostraDettaglioSerie(serie));
-        });
-      }
-
-      function mostraDettaglioSerie(serie) {
-        console.log("Mostra dettaglio:", serie);
-        dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
-        dettaglioTitolo.textContent = serie.titolo;
-        dettaglioStagioni.innerHTML = "";
-
-        if (!serie.stagioni || serie.stagioni.length === 0) {
-          dettaglioStagioni.innerHTML = "<p style='text-align:center'>Nessuna stagione disponibile</p>";
-          dettaglioContainer.style.display = "block";
-          return;
-        }
-
-        serie.stagioni.forEach(stagione => {
-          const stagioneDiv = document.createElement("div");
-          stagioneDiv.className = "stagione";
-
-          const titoloStagione = document.createElement("h3");
-          titoloStagione.textContent = `Stagione ${stagione.stagione}`;
-          
-          const episodiDiv = document.createElement("div");
-          episodiDiv.className = "episodi";
-
-          if (stagione.episodi && stagione.episodi.length > 0) {
-            stagione.episodi.forEach(episodio => {
-              const epDiv = document.createElement("div");
-              epDiv.className = "episodio";
-
-              const titoloEp = document.createElement("p");
-              titoloEp.textContent = episodio.titolo || `Episodio ${episodio.episodio || ''}`.trim();
-
-              // Gestione fonti (supporta sia 'links' che 'fonti')
-              const fonti = [...new Set(episodio.links || episodio.fonti || [])]
-                .filter(fonte => fonte && fonte.includes('http'))
-                .sort((a, b) => a.localeCompare(b));
-
-              // Mostra massimo 2 fonti
-              fonti.slice(0, 2).forEach((fonte, i) => {
-                const btn = document.createElement("button");
-                btn.textContent = `Fonte ${i+1}`;
-                btn.addEventListener("click", (e) => {
-                  e.preventDefault();
-                  window.open(fonte, "_blank");
+            fetch("videos.json")
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    serieData = data;
+                    mostraCatalogo(data);
+                    console.log("Dati caricati correttamente");
+                })
+                .catch(err => {
+                    catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
+                    console.error("Errore fetch:", err);
                 });
-                epDiv.appendChild(btn);
-              });
 
-              // Mostra indicazione se ci sono più fonti
-              if (fonti.length > 2) {
-                const extra = document.createElement("span");
-                extra.textContent = ` (+${fonti.length - 2} altre)`;
-                extra.style.marginLeft = "8px";
-                extra.style.color = "#aaa";
-                epDiv.appendChild(extra);
-              }
+            function mostraCatalogo(lista) {
+                catalogoWrapper.innerHTML = "";
+                if (lista.length === 0) {
+                    catalogoWrapper.innerHTML = "<p style='text-align:center'>Nessun risultato trovato</p>";
+                    return;
+                }
 
-              episodiDiv.appendChild(epDiv);
+                lista.forEach((serie, index) => {
+                    const card = document.createElement("div");
+                    card.className = "serie-card";
+                    card.dataset.index = index;
+
+                    const img = document.createElement("img");
+                    img.src = serie.copertina || "https://via.placeholder.com/140x210?text=Copertina";
+                    img.alt = serie.titolo;
+                    img.loading = "lazy";
+
+                    const titolo = document.createElement("h2");
+                    titolo.textContent = serie.titolo;
+
+                    card.appendChild(img);
+                    card.appendChild(titolo);
+                    catalogoWrapper.appendChild(card);
+
+                    card.addEventListener("click", () => mostraDettaglioSerie(serie));
+                });
+            }
+
+            function mostraDettaglioSerie(serie) {
+                console.log("Mostra dettaglio:", serie);
+                dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
+                dettaglioTitolo.textContent = serie.titolo;
+                dettaglioStagioni.innerHTML = "";
+
+                if (!serie.stagioni || serie.stagioni.length === 0) {
+                    dettaglioStagioni.innerHTML = "<p style='text-align:center'>Nessuna stagione disponibile</p>";
+                    dettaglioContainer.style.display = "block";
+                    return;
+                }
+
+                serie.stagioni.forEach(stagione => {
+                    const stagioneDiv = document.createElement("div");
+                    stagioneDiv.className = "stagione";
+
+                    const titoloStagione = document.createElement("h3");
+                    titoloStagione.textContent = `Stagione ${stagione.stagione}`;
+
+                    const episodiDiv = document.createElement("div");
+                    episodiDiv.className = "episodi";
+
+                    if (stagione.episodi && stagione.episodi.length > 0) {
+                        stagione.episodi.forEach((episodio, indexEpisodio) => {
+                            const epDiv = document.createElement("div");
+                            epDiv.className = "episodio";
+
+                            const titoloEp = document.createElement("p");
+                            titoloEp.textContent = `Episodio ${episodio.episodio || indexEpisodio + 1}`;
+
+                            const fonti = [...new Set(episodio.links || episodio.fonti || [])]
+                                .filter(fonte => fonte && fonte.includes('http'))
+                                .sort((a, b) => a.localeCompare(b));
+
+                            const fontiContainer = document.createElement("div");
+                            fontiContainer.className = "fonti-container";
+
+                            fonti.slice(0, 2).forEach((fonte, i) => {
+                                const btn = document.createElement("button");
+                                btn.textContent = `Fonte ${i + 1}`;
+                                btn.addEventListener("click", (e) => {
+                                    e.preventDefault();
+                                    window.open(fonte, "_blank");
+                                });
+                                fontiContainer.appendChild(btn);
+                            });
+
+                            epDiv.appendChild(titoloEp);
+                            epDiv.appendChild(fontiContainer);
+
+                            if (fonti.length > 2) {
+                                const extra = document.createElement("span");
+                                extra.textContent = ` (+${fonti.length - 2} altre)`;
+                                extra.className = "altre-fonti";
+                                epDiv.appendChild(extra);
+                            }
+
+                            episodiDiv.appendChild(epDiv);
+                        });
+                    } else {
+                        episodiDiv.innerHTML = "<p style='text-align:center'>Nessun episodio disponibile</p>";
+                    }
+
+                    titoloStagione.addEventListener("click", () => {
+                        const isVisible = getComputedStyle(episodiDiv).display === "block";
+                        episodiDiv.style.display = isVisible ? "none" : "block";
+                        stagioneDiv.classList.toggle("aperta");
+                    });
+
+                    stagioneDiv.appendChild(titoloStagione);
+                    stagioneDiv.appendChild(episodiDiv);
+                    dettaglioStagioni.appendChild(stagioneDiv);
+                });
+
+                dettaglioContainer.style.display = "block";
+            }
+
+            barraRicerca.addEventListener("input", () => {
+                const testo = barraRicerca.value.toLowerCase();
+                const filtrate = serieData.filter(serie =>
+                    serie.titolo.toLowerCase().includes(testo)
+                );
+                mostraCatalogo(filtrate);
             });
-          } else {
-            episodiDiv.innerHTML = "<p style='text-align:center'>Nessun episodio disponibile</p>";
-          }
 
-          titoloStagione.addEventListener("click", () => {
-            episodiDiv.style.display = episodiDiv.style.display === "none" ? "block" : "none";
-            stagioneDiv.classList.toggle("aperta");
-          });
+            frecciaIndietro.addEventListener("click", () => {
+                dettaglioContainer.style.display = "none";
+            });
 
-          stagioneDiv.appendChild(titoloStagione);
-          stagioneDiv.appendChild(episodiDiv);
-          dettaglioStagioni.appendChild(stagioneDiv);
+            // Chiudi dettaglio con ESC
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    dettaglioContainer.style.display = "none";
+                }
+            });
+
+            vediSenzaPubblicitaGeneraleButton.addEventListener("click", () => {
+                vediSenzaPubblicitaGeneraleTendina.style.display = vediSenzaPubblicitaGeneraleTendina.style.display === "none" ? "block" : "none";
+            });
         });
-
-        dettaglioContainer.style.display = "block";
-      }
-
-      barraRicerca.addEventListener("input", () => {
-        const testo = barraRicerca.value.toLowerCase();
-        const filtrate = serieData.filter(serie =>
-          serie.titolo.toLowerCase().includes(testo)
-        );
-        mostraCatalogo(filtrate);
-      });
-
-      frecciaIndietro.addEventListener("click", () => {
-        dettaglioContainer.style.display = "none";
-      });
-
-      // Chiudi dettaglio con ESC
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          dettaglioContainer.style.display = "none";
-        }
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>
