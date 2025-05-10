@@ -151,20 +151,31 @@ async def salva_offerta(update: Update, context: CallbackContext):
         return
 
     titolo = message.text or "Offerta Amazon"
-    link = ""
+    offerta_link = ""
     img_url = "https://via.placeholder.com/150"
+    telegram_link = ""
 
+    # Estrai link dal testo se presente
     if message.entities:
         for entity in message.entities:
             if entity.type == "url":
-                link = message.text[entity.offset:entity.offset + entity.length]
+                offerta_link = message.text[entity.offset:entity.offset + entity.length]
+                break # Prendi il primo URL trovato
 
+    # Gestisci l'immagine
     if message.photo:
         photo = message.photo[-1]
         file = await context.bot.get_file(photo.file_id)
-        img_url = file.file_path
+        img_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file.file_path}"
 
-    offerta = {"titolo": titolo, "link": link, "img": img_url}
+    # Costruisci il link diretto al messaggio del canale
+    channel_id = message.chat.id
+    message_id = message.message_id
+    # Gli ID dei canali pubblici sono negativi, ma nei link t.me sono senza il segno e preceduti da -100
+    public_channel_id = str(channel_id).replace("-100", "") if str(channel_id).startswith("-100") else str(channel_id)[1:]
+    telegram_link = f"https://t.me/c/{public_channel_id}/{message_id}"
+
+    offerta = {"titolo": titolo, "link": offerta_link, "img": img_url, "telegram_link": telegram_link}
 
     if os.path.exists(OFFERTE_FILE):
         with open(OFFERTE_FILE, "r", encoding="utf-8") as f:
