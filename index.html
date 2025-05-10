@@ -76,6 +76,34 @@
       text-overflow: ellipsis;
     }
 
+     #vediSenzaPubblicitaGeneraleContainer {
+      margin: 15px auto;
+      text-align: center;
+    }
+
+    #vediSenzaPubblicitaGeneraleButton {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #vediSenzaPubblicitaGeneraleTendina {
+      background-color: #222;
+      color: #eee;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 14px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+    }
+
     #dettaglioSerieContainer {
       display: none;
       position: fixed;
@@ -186,6 +214,16 @@
   <input type="text" id="barraRicerca" placeholder="Cerca una serie..." />
 
   <div id="catalogoWrapper"></div>
+
+  <div id="vediSenzaPubblicitaGeneraleContainer">
+    <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
+    <div id="vediSenzaPubblicitaGeneraleTendina">
+      Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
+    <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
+    <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
+      <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+    </div>
+  </div>
 
   <div id="dettaglioSerieContainer">
     <button id="frecciaIndietro">←</button>
