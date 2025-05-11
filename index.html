@@ -342,7 +342,7 @@
 
             function startOfferteAutoScroll() {
                 let scrollPosition = 0;
-                const scrollStep = 1;
+                const scrollStep = 0;
                 const containerWidth = offerteContainer.scrollWidth - offerteContainer.clientWidth;
                 
                 offerteScrollInterval = setInterval(() => {
@@ -354,7 +354,7 @@
                     } else {
                         offerteContainer.scrollLeft = scrollPosition;
                     }
-                }, 100);
+                }, 120);
             }
 
             function mostraCatalogo(lista) {
