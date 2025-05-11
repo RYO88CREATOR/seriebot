@@ -41,6 +41,17 @@
             gap: 12px;
             padding: 10px;
             scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch; /* Per un'esperienza più fluida su iOS */
+            animation: scrollCatalogo 30s linear infinite; /* Animazione di scorrimento */
+        }
+
+        @keyframes scrollCatalogo {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-1 * (140px + 12px) * var(--item-count))); /* Calcolo più preciso */
+            }
         }
 
         .serie-card {
@@ -79,15 +90,19 @@
         #vediSenzaPubblicitaGeneraleContainer {
             margin: 15px auto;
             text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
         }
 
         #vediSenzaPubblicitaGeneraleButton {
             background-color: #333;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
         }
 
@@ -102,6 +117,7 @@
             margin-left: auto;
             margin-right: auto;
             display: none;
+            text-align: left; /* Allinea il testo a sinistra per una migliore lettura */
         }
 
         #dettaglioSerieContainer {
@@ -211,12 +227,48 @@
             z-index: 1100;
         }
 
+        .offerte-container {
+            display: flex;
+            flex-wrap: nowrap; /* Impedisce il ritorno a capo */
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 10px; /* Aggiungi un po' di padding per lo spazio */
+            -webkit-overflow-scrolling: touch; /* Per un'esperienza più fluida su iOS */
+            animation: scrollOfferte 25s linear infinite; /* Animazione di scorrimento */
+        }
+
+        .offerta-card {
+            width: 160px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            flex: 0 0 auto; /* Non si restringe e non si allarga, dimensione fissa */
+            scroll-snap-align: start;
+        }
+
+        @keyframes scrollOfferte {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                /* Calcola la distanza totale da scorrere */
+                transform: translateX(calc(-1 * (160px + 1rem) * var(--offerta-item-count)));
+            }
+        }
+
         @media (max-width: 600px) {
             #dettaglioCopertina {
                 width: 80px;
             }
             .serie-card {
                 width: 120px;
+            }
+            .offerta-card {
+                width: 140px; /* Adatta la larghezza delle offerte su schermi piccoli */
             }
         }
     </style>
@@ -229,12 +281,14 @@
     <div id="catalogoWrapper"></div>
 
     <div id="vediSenzaPubblicitaGeneraleContainer">
-        <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
+        <button id="vediSenzaPubblicitaGeneraleButton">Vedi senza pubblicità</button>
+        <button onclick="window.open('https://telegram.me/share/url?url=https://t.me/SerieXYZbot', '_blank')" style="background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 14px; cursor: pointer;">Invita un amico</button>
         <div id="vediSenzaPubblicitaGeneraleTendina">
             Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
-        <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
-        <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
-            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+            <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
+            <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
+                <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+            </p>
         </div>
     </div>
 
@@ -242,46 +296,26 @@
         <h2>🔥 Offerte Amazon</h2>
         <div id="offerte-container" class="offerte-container"></div>
     </section>
-    <style>
-        .offerte-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-        .offerta-card {
-          width: 160px;
-          background: #f9f9f9;
-          border: 1px solid #ccc;
-          padding: 0.5rem;
-          border-radius: 10px;
-          text-align: center;
-          font-size: 14px;
-        }
-        .offerta-card img {
-          width: 100%;
-          height: auto;
-          border-radius: 8px;
-        }
-      </style>
-      <script>
+    <script>
         fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById("offerte-container");
+                container.style.setProperty('--offerta-item-count', data.length); // Imposta la variabile CSS
                 data.forEach(offerta => {
                     const div = document.createElement("div");
                     div.className = "offerta-card";
                     div.innerHTML = `
-                        <a href="${offerta.telegram_link}" target="_blank">
-                            <img src="${offerta.img}" alt="${offerta.titolo}">
-                            <p>${offerta.titolo}</p>
+                        <a href="<span class="math-inline">\{offerta\.telegram\_link\}" target\="\_blank"\>
+<img src\="</span>{offerta.img}" alt="<span class="math-inline">\{offerta\.titolo\}"\>
+<p\></span>{offerta.titolo}</p>
                         </a>
                     `;
                     container.appendChild(div);
                 });
             })
             .catch(err => console.error("Errore nel caricamento delle offerte:", err));
-      </script>
+    </script>
 
     <div id="dettaglioSerieContainer">
         <button id="frecciaIndietro">←</button>
@@ -328,6 +362,8 @@
                     return;
                 }
 
+                // Imposta la variabile CSS con il numero di elementi
+                catalogoWrapper.style.setProperty('--item-count', lista.length);
                 lista.forEach((serie, index) => {
                     const card = document.createElement("div");
                     card.className = "serie-card";
@@ -451,9 +487,9 @@
         });
     </script>
     <script>
-  setTimeout(() => {
-    location.reload();
-  }, 60000); // ricarica ogni 60 secondi (60000 ms)
-</script>
+        setTimeout(() => {
+            location.reload();
+        }, 60000); // ricarica ogni 60 secondi (60000 ms)
+    </script>
 </body>
 </html>
