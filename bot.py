@@ -187,7 +187,7 @@ async def salva_offerta(update: Update, context: CallbackContext):
         offerte = []
 
     offerte.insert(0, offerta)
-    offerte = offerte[:15]
+    offerte = offerte[:30]
 
     with open(OFFERTE_FILE, "w", encoding="utf-8") as f:
         json.dump(offerte, f, ensure_ascii=False, indent=2)
