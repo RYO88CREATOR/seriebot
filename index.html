@@ -76,19 +76,23 @@
             text-overflow: ellipsis;
         }
 
-        #vediSenzaPubblicitaGeneraleContainer {
+        #buttonContainer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin: 15px auto;
-            text-align: center;
+            flex-wrap: wrap;
         }
 
-        #vediSenzaPubblicitaGeneraleButton {
+        .action-button {
             background-color: #333;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         #vediSenzaPubblicitaGeneraleTendina {
@@ -96,11 +100,9 @@
             color: #eee;
             padding: 15px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin: 10px auto;
             font-size: 14px;
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
             display: none;
         }
 
@@ -205,7 +207,7 @@
             left: 15px;
             background: none;
             border: none;
-            font-size: 26px;
+            font-size: 32px;
             color: white;
             cursor: pointer;
             z-index: 1100;
@@ -219,6 +221,37 @@
                 width: 120px;
             }
         }
+
+        .offerte-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .offerta-card {
+            flex: 0 0 auto;
+            width: 160px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            scroll-snap-align: start;
+        }
+        
+        .offerta-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .offerte-section h2 {
+            padding-left: 15px;
+        }
     </style>
 </head>
 <body>
@@ -228,61 +261,23 @@
 
     <div id="catalogoWrapper"></div>
 
-    <div id="vediSenzaPubblicitaGeneraleContainer">
-        <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
-        <div id="vediSenzaPubblicitaGeneraleTendina">
-            Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
-            <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
-            <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
-                <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
-            </p>
-        </div>
+    <div id="buttonContainer">
+        <button id="vediSenzaPubblicitaGeneraleButton" class="action-button">Senza pubblicità</button>
+        <button id="invitaAmicoButton" class="action-button">Invita un amico</button>
+    </div>
+    
+    <div id="vediSenzaPubblicitaGeneraleTendina">
+        Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
+        <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
+        <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
+            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+        </p>
     </div>
 
     <section id="offerte" class="offerte-section">
         <h2>🔥 Offerte Amazon</h2>
         <div id="offerte-container" class="offerte-container"></div>
     </section>
-    <style>
-        .offerte-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .offerta-card {
-            width: 160px;
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 0.5rem;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .offerta-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-    </style>
-    <script>
-        fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById("offerte-container");
-                data.forEach(offerta => {
-                    const div = document.createElement("div");
-                    div.className = "offerta-card";
-                    div.innerHTML = `
-                        <a href="${offerta.telegram_link}" target="_blank">
-                            <img src="${offerta.img}" alt="${offerta.titolo}">
-                            <p>${offerta.titolo}</p>
-                        </a>
-                    `;
-                    container.appendChild(div);
-                });
-            })
-            .catch(err => console.error("Errore nel caricamento delle offerte:", err));
-    </script>
 
     <div id="dettaglioSerieContainer">
         <button id="frecciaIndietro">←</button>
@@ -304,8 +299,11 @@
             const frecciaIndietro = document.getElementById("frecciaIndietro");
             const vediSenzaPubblicitaGeneraleButton = document.getElementById("vediSenzaPubblicitaGeneraleButton");
             const vediSenzaPubblicitaGeneraleTendina = document.getElementById("vediSenzaPubblicitaGeneraleTendina");
+            const invitaAmicoButton = document.getElementById("invitaAmicoButton");
+            const offerteContainer = document.getElementById("offerte-container");
 
             let serieData = [];
+            let offerteScrollInterval;
 
             fetch("videos.json")
                 .then(res => {
@@ -321,6 +319,43 @@
                     catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
                     console.error("Errore fetch:", err);
                 });
+
+            fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(offerta => {
+                        const div = document.createElement("div");
+                        div.className = "offerta-card";
+                        div.innerHTML = `
+                            <a href="${offerta.telegram_link}" target="_blank">
+                                <img src="${offerta.img}" alt="${offerta.titolo}">
+                                <p>${offerta.titolo}</p>
+                            </a>
+                        `;
+                        offerteContainer.appendChild(div);
+                    });
+                    
+                    // Avvia lo scorrimento automatico delle offerte
+                    startOfferteAutoScroll();
+                })
+                .catch(err => console.error("Errore nel caricamento delle offerte:", err));
+
+            function startOfferteAutoScroll() {
+                let scrollPosition = 0;
+                const scrollStep = 1;
+                const containerWidth = offerteContainer.scrollWidth - offerteContainer.clientWidth;
+                
+                offerteScrollInterval = setInterval(() => {
+                    scrollPosition += scrollStep;
+                    
+                    if (scrollPosition >= containerWidth) {
+                        scrollPosition = 0;
+                        offerteContainer.scrollTo({ left: 0, behavior: 'instant' });
+                    } else {
+                        offerteContainer.scrollLeft = scrollPosition;
+                    }
+                }, 50);
+            }
 
             function mostraCatalogo(lista) {
                 catalogoWrapper.innerHTML = "";
@@ -449,9 +484,12 @@
             vediSenzaPubblicitaGeneraleButton.addEventListener("click", () => {
                 vediSenzaPubblicitaGeneraleTendina.style.display = vediSenzaPubblicitaGeneraleTendina.style.display === "none" ? "block" : "none";
             });
+
+            invitaAmicoButton.addEventListener("click", () => {
+                window.open("https://telegram.me/share/url?url=https://t.me/SerieXYZbot", "_blank");
+            });
         });
-    </script>
-    <script>
+
         setTimeout(() => {
             location.reload();
         }, 60000); // ricarica ogni 60 secondi (60000 ms)
