@@ -41,6 +41,12 @@
             gap: 12px;
             padding: 10px;
             scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        #catalogoWrapper::-webkit-scrollbar {
+            display: none;
         }
 
         .serie-card {
@@ -213,6 +219,49 @@
             z-index: 1100;
         }
 
+        .offerte-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .offerte-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .offerta-card {
+            flex: 0 0 auto;
+            width: 160px;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            scroll-snap-align: start;
+            color: white;
+        }
+
+        .offerta-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .offerta-card a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+
+        .offerte-section h2 {
+            padding-left: 15px;
+            margin-bottom: 5px;
+        }
+
         @media (max-width: 600px) {
             #dettaglioCopertina {
                 width: 80px;
@@ -220,37 +269,9 @@
             .serie-card {
                 width: 120px;
             }
-        }
-
-        .offerte-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 1rem;
-            padding: 10px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .offerta-card {
-            flex: 0 0 auto;
-            width: 160px;
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 0.5rem;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-            scroll-snap-align: start;
-        }
-        
-        .offerta-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        
-        .offerte-section h2 {
-            padding-left: 15px;
+            .offerta-card {
+                width: 140px;
+            }
         }
     </style>
 </head>
@@ -270,7 +291,7 @@
         Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
         <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
         <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
-            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>
         </p>
     </div>
 
@@ -303,7 +324,6 @@
             const offerteContainer = document.getElementById("offerte-container");
 
             let serieData = [];
-            let offerteScrollInterval;
 
             fetch("videos.json")
                 .then(res => {
@@ -334,48 +354,8 @@
                         `;
                         offerteContainer.appendChild(div);
                     });
-                    
-                    // Avvia lo scorrimento automatico delle offerte
-                    startOfferteAutoScroll();
                 })
                 .catch(err => console.error("Errore nel caricamento delle offerte:", err));
-
-            function startOfferteAutoScroll() {
-    const container = offerteContainer;
-    const items = container.querySelectorAll('.offerta-card');
-    if(items.length === 0) return;
-    
-    let currentIndex = 0;
-    const itemWidth = items[0].offsetWidth + 16; // larghezza card + gap
-    const scrollSpeed = 3000; // 3 secondi
-    
-    // Ferma l'eventuale intervallo precedente
-    if(offerteScrollInterval) clearInterval(offerteScrollInterval);
-    
-    function scrollToNext() {
-        currentIndex = (currentIndex + 1) % items.length;
-        container.scrollTo({
-            left: currentIndex * itemWidth,
-            behavior: 'smooth'
-        });
-    }
-    
-    // Scroll iniziale
-    container.scrollTo({ left: 0, behavior: 'auto' });
-    
-    // Avvia l'intervallo
-    offerteScrollInterval = setInterval(scrollToNext, scrollSpeed);
-    
-    // Pausa scroll al hover
-    container.addEventListener('mouseenter', () => {
-        clearInterval(offerteScrollInterval);
-    });
-    
-    // Riprendi scroll quando il mouse esce
-    container.addEventListener('mouseleave', () => {
-        offerteScrollInterval = setInterval(scrollToNext, scrollSpeed);
-    });
-}
 
             function mostraCatalogo(lista) {
                 catalogoWrapper.innerHTML = "";
@@ -494,7 +474,6 @@
                 dettaglioContainer.style.display = "none";
             });
 
-            // Chiudi dettaglio con ESC
             document.addEventListener("keydown", (e) => {
                 if (e.key === "Escape") {
                     dettaglioContainer.style.display = "none";
@@ -512,7 +491,7 @@
 
         setTimeout(() => {
             location.reload();
-        }, 60000); // ricarica ogni 60 secondi (60000 ms)
+        }, 60000);
     </script>
 </body>
 </html>
