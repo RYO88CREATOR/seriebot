@@ -341,21 +341,37 @@
                 .catch(err => console.error("Errore nel caricamento delle offerte:", err));
 
             function startOfferteAutoScroll() {
-                let scrollPosition = 0;
-                const scrollStep = 0;
-                const containerWidth = offerteContainer.scrollWidth - offerteContainer.clientWidth;
-                
-                offerteScrollInterval = setInterval(() => {
-                    scrollPosition += scrollStep;
-                    
-                    if (scrollPosition >= containerWidth) {
-                        scrollPosition = 0;
-                        offerteContainer.scrollTo({ left: 0, behavior: 'instant' });
-                    } else {
-                        offerteContainer.scrollLeft = scrollPosition;
-                    }
-                }, 120);
+    let scrollPosition = 0;
+    const scrollStep = 1;
+    let isScrollingForward = true;
+    const scrollSpeed = 30; // regola la velocità (più alto = più lento)
+    const container = offerteContainer;
+    const containerWidth = container.scrollWidth - container.clientWidth;
+    
+    // Ferma l'eventuale intervallo precedente
+    if (offerteScrollInterval) clearInterval(offerteScrollInterval);
+    
+    offerteScrollInterval = setInterval(() => {
+        if (isScrollingForward) {
+            scrollPosition += scrollStep;
+            if (scrollPosition >= containerWidth) {
+                // Raggiunto la fine, torna indietro lentamente
+                isScrollingForward = false;
             }
+        } else {
+            scrollPosition -= scrollStep;
+            if (scrollPosition <= 0) {
+                // Tornati all'inizio, riparti
+                isScrollingForward = true;
+            }
+        }
+        
+        container.scrollTo({
+            left: scrollPosition,
+            behavior: 'smooth' // rende lo scroll più fluido
+        });
+    }, scrollSpeed);
+}
 
             function mostraCatalogo(lista) {
                 catalogoWrapper.innerHTML = "";
