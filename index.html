@@ -341,36 +341,40 @@
                 .catch(err => console.error("Errore nel caricamento delle offerte:", err));
 
             function startOfferteAutoScroll() {
-    let scrollPosition = 0;
-    const scrollStep = 1;
-    let isScrollingForward = true;
-    const scrollSpeed = 30; // regola la velocità (più alto = più lento)
     const container = offerteContainer;
-    const containerWidth = container.scrollWidth - container.clientWidth;
+    const items = container.querySelectorAll('.offerta-card');
+    if(items.length === 0) return;
+    
+    let currentIndex = 0;
+    const itemWidth = items[0].offsetWidth + 16; // larghezza card + gap
+    const scrollSpeed = 3000; // 3 secondi
     
     // Ferma l'eventuale intervallo precedente
-    if (offerteScrollInterval) clearInterval(offerteScrollInterval);
+    if(offerteScrollInterval) clearInterval(offerteScrollInterval);
     
-    offerteScrollInterval = setInterval(() => {
-        if (isScrollingForward) {
-            scrollPosition += scrollStep;
-            if (scrollPosition >= containerWidth) {
-                // Raggiunto la fine, torna indietro lentamente
-                isScrollingForward = false;
-            }
-        } else {
-            scrollPosition -= scrollStep;
-            if (scrollPosition <= 0) {
-                // Tornati all'inizio, riparti
-                isScrollingForward = true;
-            }
-        }
-        
+    function scrollToNext() {
+        currentIndex = (currentIndex + 1) % items.length;
         container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth' // rende lo scroll più fluido
+            left: currentIndex * itemWidth,
+            behavior: 'smooth'
         });
-    }, scrollSpeed);
+    }
+    
+    // Scroll iniziale
+    container.scrollTo({ left: 0, behavior: 'auto' });
+    
+    // Avvia l'intervallo
+    offerteScrollInterval = setInterval(scrollToNext, scrollSpeed);
+    
+    // Pausa scroll al hover
+    container.addEventListener('mouseenter', () => {
+        clearInterval(offerteScrollInterval);
+    });
+    
+    // Riprendi scroll quando il mouse esce
+    container.addEventListener('mouseleave', () => {
+        offerteScrollInterval = setInterval(scrollToNext, scrollSpeed);
+    });
 }
 
             function mostraCatalogo(lista) {
