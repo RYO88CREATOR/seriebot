@@ -42,16 +42,6 @@
             padding: 10px;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch; /* Per un'esperienza più fluida su iOS */
-            animation: scrollCatalogo 30s linear infinite; /* Animazione di scorrimento */
-        }
-
-        @keyframes scrollCatalogo {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(calc(-1 * (140px + 12px) * var(--item-count))); /* Calcolo più preciso */
-            }
         }
 
         .serie-card {
@@ -235,7 +225,6 @@
             scroll-snap-type: x mandatory;
             padding: 10px; /* Aggiungi un po' di padding per lo spazio */
             -webkit-overflow-scrolling: touch; /* Per un'esperienza più fluida su iOS */
-            animation: scrollOfferte 25s linear infinite; /* Animazione di scorrimento */
         }
 
         .offerta-card {
@@ -248,16 +237,6 @@
             font-size: 14px;
             flex: 0 0 auto; /* Non si restringe e non si allarga, dimensione fissa */
             scroll-snap-align: start;
-        }
-
-        @keyframes scrollOfferte {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                /* Calcola la distanza totale da scorrere */
-                transform: translateX(calc(-1 * (160px + 1rem) * var(--offerta-item-count)));
-            }
         }
 
         @media (max-width: 600px) {
@@ -297,36 +276,6 @@
         <div id="offerte-container" class="offerte-container"></div>
     </section>
     <script>
-        fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById("offerte-container");
-                container.style.setProperty('--offerta-item-count', data.length); // Imposta la variabile CSS
-                data.forEach(offerta => {
-                    const div = document.createElement("div");
-                    div.className = "offerta-card";
-                    div.innerHTML = `
-                        <a href="<span class="math-inline">\{offerta\.telegram\_link\}" target\="\_blank"\>
-<img src\="</span>{offerta.img}" alt="<span class="math-inline">\{offerta\.titolo\}"\>
-<p\></span>{offerta.titolo}</p>
-                        </a>
-                    `;
-                    container.appendChild(div);
-                });
-            })
-            .catch(err => console.error("Errore nel caricamento delle offerte:", err));
-    </script>
-
-    <div id="dettaglioSerieContainer">
-        <button id="frecciaIndietro">←</button>
-        <div id="dettaglioSerie">
-            <img id="dettaglioCopertina" src="" alt="Copertina" />
-            <h2 id="dettaglioTitolo"></h2>
-            <div id="dettaglioStagioni"></div>
-        </div>
-    </div>
-
-    <script>
         document.addEventListener("DOMContentLoaded", () => {
             const barraRicerca = document.getElementById("barraRicerca");
             const catalogoWrapper = document.getElementById("catalogoWrapper");
@@ -337,8 +286,27 @@
             const frecciaIndietro = document.getElementById("frecciaIndietro");
             const vediSenzaPubblicitaGeneraleButton = document.getElementById("vediSenzaPubblicitaGeneraleButton");
             const vediSenzaPubblicitaGeneraleTendina = document.getElementById("vediSenzaPubblicitaGeneraleTendina");
+            const offerteContainer = document.getElementById("offerte-container");
 
             let serieData = [];
+            let autoScrollIntervalCatalogo;
+            let autoScrollIntervalOfferte;
+            const scrollSpeed = 1; // Velocità di scorrimento (puoi regolarla)
+            const scrollIntervalTime = 30; // Intervallo di tempo per lo scorrimento (in millisecondi)
+
+            function startAutoScroll(element, speed, intervalTime) {
+                return setInterval(() => {
+                    element.scrollLeft += speed;
+                    // Se si raggiunge la fine, riavvolgi (opzionale)
+                    if (element.scrollWidth - element.clientWidth <= element.scrollLeft + 1) {
+                        element.scrollLeft = 0;
+                    }
+                }, intervalTime);
+            }
+
+            function stopAutoScroll(intervalId) {
+                clearInterval(intervalId);
+            }
 
             fetch("videos.json")
                 .then(res => {
@@ -348,22 +316,46 @@
                 .then(data => {
                     serieData = data;
                     mostraCatalogo(data);
-                    console.log("Dati caricati correttamente");
+                    autoScrollIntervalCatalogo = startAutoScroll(catalogoWrapper, scrollSpeed, scrollIntervalTime);
+                    catalogoWrapper.addEventListener('mousedown', () => stopAutoScroll(autoScrollIntervalCatalogo));
+                    catalogoWrapper.addEventListener('mouseup', () => autoScrollIntervalCatalogo = startAutoScroll(catalogoWrapper, scrollSpeed, scrollIntervalTime));
+                    catalogoWrapper.addEventListener('mouseleave', () => autoScrollIntervalCatalogo = startAutoScroll(catalogoWrapper, scrollSpeed, scrollIntervalTime));
                 })
                 .catch(err => {
                     catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
                     console.error("Errore fetch:", err);
                 });
 
+            fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
+                .then(response => response.json())
+                .then(data => {
+                    offerteContainer.innerHTML = ""; // Pulisci il container prima di aggiungere le offerte
+                    offerteContainer.style.setProperty('--offerta-item-count', data.length);
+                    data.forEach(offerta => {
+                        const div = document.createElement("div");
+                        div.className = "offerta-card";
+                        div.innerHTML = `
+                            <a href="<span class="math-inline">\{offerta\.telegram\_link\}" target\="\_blank"\>
+<img src\="</span>{offerta.img}" alt="<span class="math-inline">\{offerta\.titolo\}"\>
+<p\></span>{offerta.titolo}</p>
+                            </a>
+                        `;
+                        offerteContainer.appendChild(div);
+                    });
+                    autoScrollIntervalOfferte = startAutoScroll(offerteContainer, scrollSpeed, scrollIntervalTime);
+                    offerteContainer.addEventListener('mousedown', () => stopAutoScroll(autoScrollIntervalOfferte));
+                    offerteContainer.addEventListener('mouseup', () => autoScrollIntervalOfferte = startAutoScroll(offerteContainer, scrollSpeed, scrollIntervalTime));
+                    offerteContainer.addEventListener('mouseleave', () => autoScrollIntervalOfferte = startAutoScroll(offerteContainer, scrollSpeed, scrollIntervalTime));
+                })
+                .catch(err => console.error("Errore nel caricamento delle offerte:", err));
+
             function mostraCatalogo(lista) {
                 catalogoWrapper.innerHTML = "";
+                catalogoWrapper.style.setProperty('--item-count', lista.length);
                 if (lista.length === 0) {
                     catalogoWrapper.innerHTML = "<p style='text-align:center'>Nessun risultato trovato</p>";
                     return;
                 }
-
-                // Imposta la variabile CSS con il numero di elementi
-                catalogoWrapper.style.setProperty('--item-count', lista.length);
                 lista.forEach((serie, index) => {
                     const card = document.createElement("div");
                     card.className = "serie-card";
