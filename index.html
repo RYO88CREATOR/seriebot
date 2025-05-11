@@ -1,917 +1,460 @@
 <!DOCTYPE html>
-
 <html lang="it">
-
 <head>
-
-    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Catalogo Serie</title>
-
-    <style>
-
-        body {
-
-            margin: 0;
-
-            padding: 0;
-
-            font-family: sans-serif;
-
-            background-color: #121212;
-
-            color: #fff;
-
-            -webkit-user-select: none;
-
-            user-select: none;
-
-        }
-
-
-
-        header {
-
-            background-color: #1f1f1f;
-
-            padding: 15px;
-
-            text-align: center;
-
-            font-size: 22px;
-
-            font-weight: bold;
-
-        }
-
-
-
-        #barraRicerca {
-
-            width: 90%;
-
-            padding: 10px;
-
-            margin: 10px auto;
-
-            display: block;
-
-            border-radius: 8px;
-
-            border: none;
-
-            font-size: 16px;
-
-            background-color: #2d2d2d;
-
-            color: white;
-
-        }
-
-
-
-        #catalogoWrapper {
-
-            overflow-x: auto;
-
-            display: flex;
-
-            gap: 12px;
-
-            padding: 10px;
-
-            scroll-snap-type: x mandatory;
-
-        }
-
-
-
-        .serie-card {
-
-            background-color: #1e1e1e;
-
-            border-radius: 8px;
-
-            flex: 0 0 auto;
-
-            width: 140px;
-
-            scroll-snap-align: start;
-
-            cursor: pointer;
-
-            padding: 6px;
-
-            text-align: center;
-
-            transition: transform 0.2s;
-
-        }
-
-
-
-        .serie-card:hover {
-
-            transform: scale(1.03);
-
-        }
-
-
-
-        .serie-card img {
-
-            width: 100%;
-
-            height: 210px;
-
-            border-radius: 6px;
-
-            object-fit: cover;
-
-            pointer-events: none;
-
-        }
-
-
-
-        .serie-card h2 {
-
-            font-size: 14px;
-
-            margin: 8px 0 0;
-
-            color: #fff;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-
-        }
-
-
-
-        #vediSenzaPubblicitaGeneraleContainer {
-
-            margin: 15px auto;
-
-            text-align: center;
-
-        }
-
-
-
-        #vediSenzaPubblicitaGeneraleButton {
-
-            background-color: #333;
-
-            color: #fff;
-
-            border: none;
-
-            padding: 10px 20px;
-
-            border-radius: 5px;
-
-            font-size: 16px;
-
-            cursor: pointer;
-
-        }
-
-
-
-        #vediSenzaPubblicitaGeneraleTendina {
-
-            background-color: #222;
-
-            color: #eee;
-
-            padding: 15px;
-
-            border-radius: 5px;
-
-            margin-top: 10px;
-
-            font-size: 14px;
-
-            max-width: 600px;
-
-            margin-left: auto;
-
-            margin-right: auto;
-
-            display: none;
-
-        }
-
-
-
-        #dettaglioSerieContainer {
-
-            display: none;
-
-            position: fixed;
-
-            top: 0;
-
-            left: 0;
-
-            right: 0;
-
-            bottom: 0;
-
-            background-color: rgba(0, 0, 0, 0.95);
-
-            z-index: 1000;
-
-            overflow-y: auto;
-
-            padding: 15px;
-
-        }
-
-
-
-        #dettaglioSerie {
-
-            background-color: #1e1e1e;
-
-            border-radius: 10px;
-
-            max-width: 800px;
-
-            margin: auto;
-
-            padding: 20px;
-
-        }
-
-
-
-        #dettaglioCopertina {
-
-            width: 120px;
-
-            float: left;
-
-            margin-right: 15px;
-
-            border-radius: 8px;
-
-            pointer-events: none;
-
-        }
-
-
-
-        #dettaglioTitolo {
-
-            font-size: 20px;
-
-            margin-top: 0;
-
-            color: #fff;
-
-        }
-
-
-
-        .stagione {
-
-            margin-top: 20px;
-
-            clear: both;
-
-        }
-
-
-
-        .stagione h3 {
-
-            background-color: #333;
-
-            padding: 10px;
-
-            margin: 0;
-
-            cursor: pointer;
-
-            border-radius: 5px;
-
-        }
-
-
-
-        .episodi {
-
-            display: none;
-
-            padding: 10px;
-
-            background-color: #222;
-
-            border-radius: 0 0 5px 5px;
-
-        }
-
-
-
-        .stagione.aperta .episodi {
-
-            display: block;
-
-        }
-
-
-
-        .episodio {
-
-            margin-bottom: 10px;
-
-            padding: 8px;
-
-            background-color: #2d2d2d;
-
-            border-radius: 4px;
-
-            display: flex; /* Usa flexbox per allineare titolo e bottoni */
-
-            align-items: center; /* Allinea verticalmente gli elementi */
-
-            justify-content: space-between; /* Spazia gli elementi */
-
-        }
-
-
-
-        .episodio p {
-
-            margin: 0;
-
-            font-weight: bold;
-
-        }
-
-
-
-        .episodio button {
-
-            margin-left: 5px;
-
-            padding: 6px 10px;
-
-            border: none;
-
-            border-radius: 5px;
-
-            background-color: #4fc3f7;
-
-            color: #000;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-        }
-
-
-
-        .episodio .fonti-container {
-
-            display: flex;
-
-            gap: 5px;
-
-        }
-
-
-
-        .episodio .altre-fonti {
-
-            margin-left: 8px;
-
-            color: #aaa;
-
-        }
-
-
-
-        #frecciaIndietro {
-
-            position: fixed;
-
-            top: 15px;
-
-            left: 15px;
-
-            background: none;
-
-            border: none;
-
-            font-size: 26px;
-
-            color: white;
-
-            cursor: pointer;
-
-            z-index: 1100;
-
-        }
-
-
-
-        @media (max-width: 600px) {
-
-            #dettaglioCopertina {
-
-                width: 80px;
-
-            }
-
-            .serie-card {
-
-                width: 120px;
-
-            }
-
-        }
-
-    </style>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Catalogo Serie</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background-color: #121212;
+            color: #fff;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        header {
+            background-color: #1f1f1f;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #barraRicerca {
+            width: 90%;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            background-color: #2d2d2d;
+            color: white;
+        }
+
+        #catalogoWrapper {
+            overflow-x: auto;
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .serie-card {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            flex: 0 0 auto;
+            width: 140px;
+            scroll-snap-align: start;
+            cursor: pointer;
+            padding: 6px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .serie-card:hover {
+            transform: scale(1.03);
+        }
+
+        .serie-card img {
+            width: 100%;
+            height: 210px;
+            border-radius: 6px;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .serie-card h2 {
+            font-size: 14px;
+            margin: 8px 0 0;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #vediSenzaPubblicitaGeneraleContainer {
+            margin: 15px auto;
+            text-align: center;
+        }
+
+        #vediSenzaPubblicitaGeneraleButton {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #vediSenzaPubblicitaGeneraleTendina {
+            background-color: #222;
+            color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        #dettaglioSerieContainer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        #dettaglioSerie {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        #dettaglioCopertina {
+            width: 120px;
+            float: left;
+            margin-right: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        #dettaglioTitolo {
+            font-size: 20px;
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .stagione {
+            margin-top: 20px;
+            clear: both;
+        }
+
+        .stagione h3 {
+            background-color: #333;
+            padding: 10px;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .episodi {
+            display: none;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .stagione.aperta .episodi {
+            display: block;
+        }
+
+        .episodio {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .episodio p {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .episodio button {
+            margin-left: 5px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4fc3f7;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .episodio .fonti-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .episodio .altre-fonti {
+            margin-left: 8px;
+            color: #aaa;
+        }
+
+        #frecciaIndietro {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: white;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        @media (max-width: 600px) {
+            #dettaglioCopertina {
+                width: 80px;
+            }
+            .serie-card {
+                width: 120px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-    <header>Catalogo Serie</header>
-
-
-
-    <input type="text" id="barraRicerca" placeholder="Cerca una serie..." />
-
-
-
-    <div id="catalogoWrapper"></div>
-
-
-
-    <div id="vediSenzaPubblicitaGeneraleContainer">
-
-        <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
-
-        <div id="vediSenzaPubblicitaGeneraleTendina">
-
-            Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
-
-        <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
-
-        <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
-
-            <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
-
-        </div>
-
-    </div>
-
-
-
-    <section id="offerte" class="offerte-section">
-
-        <h2>🔥 Offerte Amazon</h2>
-
-        <div id="offerte-container" class="offerte-container"></div>
-
-    </section>
-
-    <style>
-
-        .offerte-container {
-
-          display: flex;
-
-          flex-wrap: wrap;
-
-          gap: 1rem;
-
-        }
-
-        .offerta-card {
-
-          width: 160px;
-
-          background: #f9f9f9;
-
-          border: 1px solid #ccc;
-
-          padding: 0.5rem;
-
-          border-radius: 10px;
-
-          text-align: center;
-
-          font-size: 14px;
-
-        }
-
-        .offerta-card img {
-
-          width: 100%;
-
-          height: auto;
-
-          border-radius: 8px;
-
-        }
-
-      </style>
-
-      <script>
-
-        fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
-
-            .then(response => response.json())
-
-            .then(data => {
-
-                const container = document.getElementById("offerte-container");
-
-                data.forEach(offerta => {
-
-                    const div = document.createElement("div");
-
-                    div.className = "offerta-card";
-
-                    div.innerHTML = `
-
-                        <a href="${offerta.telegram_link}" target="_blank">
-
-                            <img src="${offerta.img}" alt="${offerta.titolo}">
-
-                            <p>${offerta.titolo}</p>
-
-                        </a>
-
-                    `;
-
-                    container.appendChild(div);
-
-                });
-
-            })
-
-            .catch(err => console.error("Errore nel caricamento delle offerte:", err));
-
-      </script>
-
-
-
-    <div id="dettaglioSerieContainer">
-
-        <button id="frecciaIndietro">←</button>
-
-        <div id="dettaglioSerie">
-
-            <img id="dettaglioCopertina" src="" alt="Copertina" />
-
-            <h2 id="dettaglioTitolo"></h2>
-
-            <div id="dettaglioStagioni"></div>
-
-        </div>
-
-    </div>
-
-
-
-    <script>
-
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const barraRicerca = document.getElementById("barraRicerca");
-
-            const catalogoWrapper = document.getElementById("catalogoWrapper");
-
-            const dettaglioContainer = document.getElementById("dettaglioSerieContainer");
-
-            const dettaglioCopertina = document.getElementById("dettaglioCopertina");
-
-            const dettaglioTitolo = document.getElementById("dettaglioTitolo");
-
-            const dettaglioStagioni = document.getElementById("dettaglioStagioni");
-
-            const frecciaIndietro = document.getElementById("frecciaIndietro");
-
-            const vediSenzaPubblicitaGeneraleButton = document.getElementById("vediSenzaPubblicitaGeneraleButton");
-
-            const vediSenzaPubblicitaGeneraleTendina = document.getElementById("vediSenzaPubblicitaGeneraleTendina");
-
-
-
-            let serieData = [];
-
-
-
-            fetch("videos.json")
-
-                .then(res => {
-
-                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
-                    return res.json();
-
-                })
-
-                .then(data => {
-
-                    serieData = data;
-
-                    mostraCatalogo(data);
-
-                    console.log("Dati caricati correttamente");
-
-                })
-
-                .catch(err => {
-
-                    catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
-
-                    console.error("Errore fetch:", err);
-
-                });
-
-
-
-            function mostraCatalogo(lista) {
-
-                catalogoWrapper.innerHTML = "";
-
-                if (lista.length === 0) {
-
-                    catalogoWrapper.innerHTML = "<p style='text-align:center'>Nessun risultato trovato</p>";
-
-                    return;
-
-                }
-
-
-
-                lista.forEach((serie, index) => {
-
-                    const card = document.createElement("div");
-
-                    card.className = "serie-card";
-
-                    card.dataset.index = index;
-
-
-
-                    const img = document.createElement("img");
-
-                    img.src = serie.copertina || "https://via.placeholder.com/140x210?text=Copertina";
-
-                    img.alt = serie.titolo;
-
-                    img.loading = "lazy";
-
-
-
-                    const titolo = document.createElement("h2");
-
-                    titolo.textContent = serie.titolo;
-
-
-
-                    card.appendChild(img);
-
-                    card.appendChild(titolo);
-
-                    catalogoWrapper.appendChild(card);
-
-
-
-                    card.addEventListener("click", () => mostraDettaglioSerie(serie));
-
-                });
-
-            }
-
-
-
-            function mostraDettaglioSerie(serie) {
-
-                console.log("Mostra dettaglio:", serie);
-
-                dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
-
-                dettaglioTitolo.textContent = serie.titolo;
-
-                dettaglioStagioni.innerHTML = "";
-
-
-
-                if (!serie.stagioni || serie.stagioni.length === 0) {
-
-                    dettaglioStagioni.innerHTML = "<p style='text-align:center'>Nessuna stagione disponibile</p>";
-
-                    dettaglioContainer.style.display = "block";
-
-                    return;
-
-                }
-
-
-
-                serie.stagioni.forEach(stagione => {
-
-                    const stagioneDiv = document.createElement("div");
-
-                    stagioneDiv.className = "stagione";
-
-
-
-                    const titoloStagione = document.createElement("h3");
-
-                    titoloStagione.textContent = `Stagione ${stagione.stagione}`;
-
-
-
-                    const episodiDiv = document.createElement("div");
-
-                    episodiDiv.className = "episodi";
-
-
-
-                    if (stagione.episodi && stagione.episodi.length > 0) {
-
-                        stagione.episodi.forEach((episodio, indexEpisodio) => {
-
-                            const epDiv = document.createElement("div");
-
-                            epDiv.className = "episodio";
-
-
-
-                            const titoloEp = document.createElement("p");
-
-                            titoloEp.textContent = `Episodio ${episodio.episodio || indexEpisodio + 1}`;
-
-
-
-                            const fonti = [...new Set(episodio.links || episodio.fonti || [])]
-
-                                .filter(fonte => fonte && fonte.includes('http'))
-
-                                .sort((a, b) => a.localeCompare(b));
-
-
-
-                            const fontiContainer = document.createElement("div");
-
-                            fontiContainer.className = "fonti-container";
-
-
-
-                            fonti.slice(0, 2).forEach((fonte, i) => {
-
-                                const btn = document.createElement("button");
-
-                                btn.textContent = `Fonte ${i + 1}`;
-
-                                btn.addEventListener("click", (e) => {
-
-                                    e.preventDefault();
-
-                                    window.open(fonte, "_blank");
-
-                                });
-
-                                fontiContainer.appendChild(btn);
-
-                            });
-
-
-
-                            epDiv.appendChild(titoloEp);
-
-                            epDiv.appendChild(fontiContainer);
-
-
-
-                            if (fonti.length > 2) {
-
-                                const extra = document.createElement("span");
-
-                                extra.textContent = ` (+${fonti.length - 2} altre)`;
-
-                                extra.className = "altre-fonti";
-
-                                epDiv.appendChild(extra);
-
-                            }
-
-
-
-                            episodiDiv.appendChild(epDiv);
-
-                        });
-
-                    } else {
-
-                        episodiDiv.innerHTML = "<p style='text-align:center'>Nessun episodio disponibile</p>";
-
-                    }
-
-
-
-                    titoloStagione.addEventListener("click", () => {
-
-                        const isVisible = getComputedStyle(episodiDiv).display === "block";
-
-                        episodiDiv.style.display = isVisible ? "none" : "block";
-
-                        stagioneDiv.classList.toggle("aperta");
-
-                    });
-
-
-
-                    stagioneDiv.appendChild(titoloStagione);
-
-                    stagioneDiv.appendChild(episodiDiv);
-
-                    dettaglioStagioni.appendChild(stagioneDiv);
-
-                });
-
-
-
-                dettaglioContainer.style.display = "block";
-
-            }
-
-
-
-            barraRicerca.addEventListener("input", () => {
-
-                const testo = barraRicerca.value.toLowerCase();
-
-                const filtrate = serieData.filter(serie =>
-
-                    serie.titolo.toLowerCase().includes(testo)
-
-                );
-
-                mostraCatalogo(filtrate);
-
-            });
-
-
-
-            frecciaIndietro.addEventListener("click", () => {
-
-                dettaglioContainer.style.display = "none";
-
-            });
-
-
-
-            // Chiudi dettaglio con ESC
-
-            document.addEventListener("keydown", (e) => {
-
-                if (e.key === "Escape") {
-
-                    dettaglioContainer.style.display = "none";
-
-                }
-
-            });
-
-
-
-            vediSenzaPubblicitaGeneraleButton.addEventListener("click", () => {
-
-                vediSenzaPubblicitaGeneraleTendina.style.display = vediSenzaPubblicitaGeneraleTendina.style.display === "none" ? "block" : "none";
-
-            });
-
-        });
-
-    </script>
-
-    <script>
-
-  setTimeout(() => {
-
-    location.reload();
-
-  }, 60000); // ricarica ogni 60 secondi (60000 ms)
-
-</script>
-
+    <header>Catalogo Serie</header>
+
+    <input type="text" id="barraRicerca" placeholder="Cerca una serie..." />
+
+    <div id="catalogoWrapper"></div>
+
+    <div id="vediSenzaPubblicitaGeneraleContainer">
+        <button id="vediSenzaPubblicitaGeneraleButton">Come vedere gli episodi senza pubblicità</button>
+        <div id="vediSenzaPubblicitaGeneraleTendina">
+            Usa il browser <strong>Brave</strong> per saltare i pop-up quando premi "Play".</p>
+            <p><a href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" style="color:#4fc3f7">Scarica Brave su Google Play</a></p>
+            <p><strong>Importante:</strong> disattiva il browser interno di Telegram:<br/>
+                <em>Menu Telegram</em> → <em>Impostazioni</em> → <em>Impostazioni chat</em> → disattiva <strong>"Browser in app"</strong>"</b>.
+            </p>
+        </div>
+    </div>
+
+    <section id="offerte" class="offerte-section">
+        <h2>🔥 Offerte Amazon</h2>
+        <div id="offerte-container" class="offerte-container"></div>
+    </section>
+    <style>
+        .offerte-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .offerta-card {
+            width: 160px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .offerta-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById("offerte-container");
+                data.forEach(offerta => {
+                    const div = document.createElement("div");
+                    div.className = "offerta-card";
+                    div.innerHTML = `
+                        <a href="${offerta.telegram_link}" target="_blank">
+                            <img src="${offerta.img}" alt="${offerta.titolo}">
+                            <p>${offerta.titolo}</p>
+                        </a>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(err => console.error("Errore nel caricamento delle offerte:", err));
+    </script>
+
+    <div id="dettaglioSerieContainer">
+        <button id="frecciaIndietro">←</button>
+        <div id="dettaglioSerie">
+            <img id="dettaglioCopertina" src="" alt="Copertina" />
+            <h2 id="dettaglioTitolo"></h2>
+            <div id="dettaglioStagioni"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const barraRicerca = document.getElementById("barraRicerca");
+            const catalogoWrapper = document.getElementById("catalogoWrapper");
+            const dettaglioContainer = document.getElementById("dettaglioSerieContainer");
+            const dettaglioCopertina = document.getElementById("dettaglioCopertina");
+            const dettaglioTitolo = document.getElementById("dettaglioTitolo");
+            const dettaglioStagioni = document.getElementById("dettaglioStagioni");
+            const frecciaIndietro = document.getElementById("frecciaIndietro");
+            const vediSenzaPubblicitaGeneraleButton = document.getElementById("vediSenzaPubblicitaGeneraleButton");
+            const vediSenzaPubblicitaGeneraleTendina = document.getElementById("vediSenzaPubblicitaGeneraleTendina");
+
+            let serieData = [];
+
+            fetch("videos.json")
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    serieData = data;
+                    mostraCatalogo(data);
+                    console.log("Dati caricati correttamente");
+                })
+                .catch(err => {
+                    catalogoWrapper.innerHTML = "<p style='color:#f44336'>Errore nel caricamento del catalogo. Ricarica la pagina.</p>";
+                    console.error("Errore fetch:", err);
+                });
+
+            function mostraCatalogo(lista) {
+                catalogoWrapper.innerHTML = "";
+                if (lista.length === 0) {
+                    catalogoWrapper.innerHTML = "<p style='text-align:center'>Nessun risultato trovato</p>";
+                    return;
+                }
+
+                lista.forEach((serie, index) => {
+                    const card = document.createElement("div");
+                    card.className = "serie-card";
+                    card.dataset.index = index;
+
+                    const img = document.createElement("img");
+                    img.src = serie.copertina || "https://via.placeholder.com/140x210?text=Copertina";
+                    img.alt = serie.titolo;
+                    img.loading = "lazy";
+
+                    const titolo = document.createElement("h2");
+                    titolo.textContent = serie.titolo;
+
+                    card.appendChild(img);
+                    card.appendChild(titolo);
+                    catalogoWrapper.appendChild(card);
+
+                    card.addEventListener("click", () => mostraDettaglioSerie(serie));
+                });
+            }
+
+            function mostraDettaglioSerie(serie) {
+                console.log("Mostra dettaglio:", serie);
+                dettaglioCopertina.src = serie.copertina || "https://via.placeholder.com/120x180?text=Copertina";
+                dettaglioTitolo.textContent = serie.titolo;
+                dettaglioStagioni.innerHTML = "";
+
+                if (!serie.stagioni || serie.stagioni.length === 0) {
+                    dettaglioStagioni.innerHTML = "<p style='text-align:center'>Nessuna stagione disponibile</p>";
+                    dettaglioContainer.style.display = "block";
+                    return;
+                }
+
+                serie.stagioni.forEach(stagione => {
+                    const stagioneDiv = document.createElement("div");
+                    stagioneDiv.className = "stagione";
+
+                    const titoloStagione = document.createElement("h3");
+                    titoloStagione.textContent = `Stagione ${stagione.stagione}`;
+
+                    const episodiDiv = document.createElement("div");
+                    episodiDiv.className = "episodi";
+
+                    if (stagione.episodi && stagione.episodi.length > 0) {
+                        stagione.episodi.forEach((episodio, indexEpisodio) => {
+                            const epDiv = document.createElement("div");
+                            epDiv.className = "episodio";
+
+                            const titoloEp = document.createElement("p");
+                            titoloEp.textContent = `Episodio ${episodio.episodio || indexEpisodio + 1}`;
+
+                            const fonti = [...new Set(episodio.links || episodio.fonti || [])]
+                                .filter(fonte => fonte && fonte.includes('http'))
+                                .sort((a, b) => a.localeCompare(b));
+
+                            const fontiContainer = document.createElement("div");
+                            fontiContainer.className = "fonti-container";
+
+                            fonti.slice(0, 2).forEach((fonte, i) => {
+                                const btn = document.createElement("button");
+                                btn.textContent = `Fonte ${i + 1}`;
+                                btn.addEventListener("click", (e) => {
+                                    e.preventDefault();
+                                    window.open(fonte, "_blank");
+                                });
+                                fontiContainer.appendChild(btn);
+                            });
+
+                            epDiv.appendChild(titoloEp);
+                            epDiv.appendChild(fontiContainer);
+
+                            if (fonti.length > 2) {
+                                const extra = document.createElement("span");
+                                extra.textContent = ` (+${fonti.length - 2} altre)`;
+                                extra.className = "altre-fonti";
+                                epDiv.appendChild(extra);
+                            }
+
+                            episodiDiv.appendChild(epDiv);
+                        });
+                    } else {
+                        episodiDiv.innerHTML = "<p style='text-align:center'>Nessun episodio disponibile</p>";
+                    }
+
+                    titoloStagione.addEventListener("click", () => {
+                        const isVisible = getComputedStyle(episodiDiv).display === "block";
+                        episodiDiv.style.display = isVisible ? "none" : "block";
+                        stagioneDiv.classList.toggle("aperta");
+                    });
+
+                    stagioneDiv.appendChild(titoloStagione);
+                    stagioneDiv.appendChild(episodiDiv);
+                    dettaglioStagioni.appendChild(stagioneDiv);
+                });
+
+                dettaglioContainer.style.display = "block";
+            }
+
+            barraRicerca.addEventListener("input", () => {
+                const testo = barraRicerca.value.toLowerCase();
+                const filtrate = serieData.filter(serie =>
+                    serie.titolo.toLowerCase().includes(testo)
+                );
+                mostraCatalogo(filtrate);
+            });
+
+            frecciaIndietro.addEventListener("click", () => {
+                dettaglioContainer.style.display = "none";
+            });
+
+            // Chiudi dettaglio con ESC
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    dettaglioContainer.style.display = "none";
+                }
+            });
+
+            vediSenzaPubblicitaGeneraleButton.addEventListener("click", () => {
+                vediSenzaPubblicitaGeneraleTendina.style.display = vediSenzaPubblicitaGeneraleTendina.style.display === "none" ? "block" : "none";
+            });
+        });
+    </script>
+    <script>
+        setTimeout(() => {
+            location.reload();
+        }, 60000); // ricarica ogni 60 secondi (60000 ms)
+    </script>
 </body>
-
 </html>
