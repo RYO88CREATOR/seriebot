@@ -130,7 +130,8 @@ async def generate_catalog_button(update: Update, context: CallbackContext):
     except error.TelegramError:
         pass
 
-    keyboard = [[InlineKeyboardButton("\U0001F3AC Apri Catalogo Video", url="https://ryo88creator.github.io/seriebot/")]]
+    web_app_info = WebAppInfo(url=WEBAPP_LINK)  # Crea l'oggetto WebAppInfo
+    keyboard = [[InlineKeyboardButton("\U0001F3AC Apri Catalogo Video", web_app=web_app_info)]] # Usa web_app
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = await context.bot.send_message(chat_id=query.message.chat_id, text="\U0001F39D\uFE0F Catalogo disponibile:", reply_markup=reply_markup)
 
