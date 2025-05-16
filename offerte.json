@@ -2,6 +2,12 @@
   {
     "titolo": "Offerta Amazon",
     "link": "",
+    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_670.jpg",
+    "telegram_link": "https://t.me/c/1464832267/101034"
+  },
+  {
+    "titolo": "Offerta Amazon",
+    "link": "",
     "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_669.jpg",
     "telegram_link": "https://t.me/c/1464832267/101033"
   },
@@ -172,11 +178,5 @@
     "link": "",
     "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_641.jpg",
     "telegram_link": "https://t.me/c/1464832267/101005"
-  },
-  {
-    "titolo": "Offerta Amazon",
-    "link": "",
-    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_640.jpg",
-    "telegram_link": "https://t.me/c/1464832267/101004"
   }
 ]
