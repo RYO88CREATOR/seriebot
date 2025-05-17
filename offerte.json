@@ -2,6 +2,24 @@
   {
     "titolo": "Offerta Amazon",
     "link": "",
+    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_718.jpg",
+    "telegram_link": "https://t.me/c/1464832267/101082"
+  },
+  {
+    "titolo": "Offerta Amazon",
+    "link": "",
+    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_717.jpg",
+    "telegram_link": "https://t.me/c/1464832267/101081"
+  },
+  {
+    "titolo": "Offerta Amazon",
+    "link": "",
+    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_716.jpg",
+    "telegram_link": "https://t.me/c/1464832267/101080"
+  },
+  {
+    "titolo": "Offerta Amazon",
+    "link": "",
     "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_715.jpg",
     "telegram_link": "https://t.me/c/1464832267/101079"
   },
@@ -160,23 +178,5 @@
     "link": "",
     "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_689.jpg",
     "telegram_link": "https://t.me/c/1464832267/101053"
-  },
-  {
-    "titolo": "Offerta Amazon",
-    "link": "",
-    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_688.jpg",
-    "telegram_link": "https://t.me/c/1464832267/101052"
-  },
-  {
-    "titolo": "Offerta Amazon",
-    "link": "",
-    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_687.jpg",
-    "telegram_link": "https://t.me/c/1464832267/101051"
-  },
-  {
-    "titolo": "Offerta Amazon",
-    "link": "",
-    "img": "https://api.telegram.org/file/bot8085845485:AAGi5BcEENkGSkQg00YhHQyl3bkBXXDUO-o/photos/file_686.jpg",
-    "telegram_link": "https://t.me/c/1464832267/101050"
   }
 ]
