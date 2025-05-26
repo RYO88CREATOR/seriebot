@@ -340,7 +340,7 @@
                     console.error("Errore fetch:", err);
                 });
 
-            fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/refs/heads/main/offerte.json")
+            fetch("https://raw.githubusercontent.com/RYO88CREATOR/seriebot/main/offerte.json")
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(offerta => {
